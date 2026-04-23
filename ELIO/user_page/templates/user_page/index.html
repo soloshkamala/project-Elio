@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELIO — Особистий профіль</title>
+    <link rel="stylesheet" href="{% static 'user_page/style.css' %}">
+</head>
+<body>
+
+    <header class="top-bar">
+        <div class="date-container">
+            <span class="date">{{ current_date }}</span>
+        </div>
+        <button class="premium-btn">Преміум підписка</button>
+    </header>
+
+    <main class="content">
+        <div class="dashboard">
+
+            <section class="card mood-chart">
+                <h3 class="card-title">Аналітика настрою за тиждень</h3>
+                <div class="chart-container">
+                    <div class="bar-wrapper">
+                        <div class="bar" style="height: {{ chart_data.0|default:0 }}%"></div>
+                        <span class="day-label">Пн</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar" style="height: {{ chart_data.1|default:0 }}%"></div>
+                        <span class="day-label">Вт</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar" style="height: {{ chart_data.2|default:0 }}%"></div>
+                        <span class="day-label">Ср</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar" style="height: {{ chart_data.3|default:0 }}%"></div>
+                        <span class="day-label">Чт</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar" style="height: {{ chart_data.4|default:0 }}%"></div>
+                        <span class="day-label">Пт</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar" style="height: {{ chart_data.5|default:0 }}%"></div>
+                        <span class="day-label">Сб</span>
+                    </div>
+                    <div class="bar-wrapper">
+                        <div class="bar" style="height: {{ chart_data.6|default:0 }}%"></div>
+                        <span class="day-label">Нд</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="stats-grid">
+                <div class="card stat-box">
+                    <span class="stat-value">{{ days_count }}</span>
+                    <span class="stat-label">Днів поспіль</span>
+                </div>
+                <div class="card stat-box">
+                    <span class="stat-value">{{ peace_percentage }}%</span>
+                    <span class="stat-label">Спокою</span>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="{% url 'calendar_view' %}" class="nav-link">
+            <div class="icon-placeholder"></div>
+            <span class="link-text">Календар</span>
+        </a>
+
+        <a href="#" class="nav-link">
+            <div class="icon-placeholder"></div>
+            <span class="link-text">Поради</span>
+        </a>
+
+        <div class="add-action">
+            <button class="main-add-btn">+</button>
+            <span class="add-text">Додати</span>
+        </div>
+
+        <a href="#" class="nav-link">
+            <div class="icon-placeholder"></div>
+            <span class="link-text">Психологи</span>
+        </a>
+
+        <a href="#" class="nav-link">
+            <div class="icon-placeholder"></div>
+            <span class="link-text">Налаштування</span>
+        </a>
+    </nav>
+
+    <div id="elio-welcome" class="elio-overlay">
+        <div class="elio-modal">
+            <div class="elio-character">
+                <div class="elio-avatar">Еліо</div>
+            </div>
+            <div class="elio-bubble">
+                <p>Привіт! Я — Еліо. Поділися зі мною своїм настроєм сьогодні!</p>
+                <button onclick="closeElio()" class="elio-confirm-btn">Обов'язково!</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const elio = document.getElementById('elio-welcome');
+                if (elio) elio.style.display = 'flex';
+            }, 800);
+        });
+
+        function closeElio() {
+            document.getElementById('elio-welcome').style.display = 'none';
+        }
+    </script>
+
+</body>
+</html>

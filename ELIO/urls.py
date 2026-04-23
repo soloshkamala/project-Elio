@@ -15,9 +15,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+<<<<<<< HEAD
 from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('calendar/', include('ELIO.calendar_app.urls')),
+    path('profile/', include('ELIO.user_page.urls')),
 ]
+=======
+from django.urls import path,include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('advice/', include('advice.urls')),
+
+]
+>>>>>>> faf46a4 (одано сторінку обраного, детальну сторінку та клікабельні картки)
