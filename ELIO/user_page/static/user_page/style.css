@@ -1,0 +1,193 @@
+
+
+:root {
+    --primary-color: #6c5ce7;
+    --bg-color: #f8f9fd;
+    --card-bg: #ffffff;
+    --text-main: #2d3436;
+    --text-muted: #b2bec3;
+    --premium-gold: #ffeaa7;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--bg-color);
+    margin: 0;
+    padding-bottom: 90px;
+}
+
+/* ВЕРХНЯ ПАНЕЛЬ */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+.date {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.premium-btn {
+    background-color: var(--premium-gold);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 25px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* КАРТКИ */
+.dashboard {
+    padding: 20px;
+}
+
+.card {
+    background: var(--card-bg);
+    border-radius: 24px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+/* ГРАФІК */
+.chart-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 120px;
+}
+
+.bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30px;
+}
+
+.bar {
+    width: 100%;
+    background: var(--primary-color);
+    border-radius: 6px;
+    transition: height 0.3s ease;
+}
+
+.day-label {
+    font-size: 10px;
+    margin-top: 8px;
+}
+
+/* СТАТИСТИКА */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.stat-box {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary-color);
+    display: block;
+}
+
+.stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* НАВІГАЦІЯ */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 80px;
+    background: white;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid #eee;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 10px;
+    text-align: center;
+}
+
+.icon-placeholder {
+    width: 24px;
+    height: 24px;
+    background: #f0f0f0;
+    margin: 0 auto 4px;
+    border-radius: 4px;
+}
+
+/* КНОПКА ДОДАТИ */
+.add-action {
+    position: relative;
+    top: -15px;
+    text-align: center;
+}
+
+.main-add-btn {
+    width: 55px;
+    height: 55px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 28px;
+    box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3);
+}
+
+.add-text {
+    display: block;
+    font-size: 10px;
+    color: var(--primary-color);
+    margin-top: 4px;
+}
+
+/* ЕЛІО */
+.elio-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.elio-modal {
+    background: white;
+    padding: 30px;
+    border-radius: 30px;
+    text-align: center;
+    width: 80%;
+}
+
+.elio-avatar {
+    width: 70px; height: 70px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.elio-confirm-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 15px;
+    margin-top: 15px;
+}
