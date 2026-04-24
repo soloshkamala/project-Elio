@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('calendar/', include('ELIO.calendar_app.urls')),
     path('profile/', include('ELIO.user_page.urls')),
+
 ]
 
 from django.urls import path,include
@@ -31,4 +32,5 @@ urlpatterns = [
     path('advice/', include('advice.urls')),
 
 ]
+
 
