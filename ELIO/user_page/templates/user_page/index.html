@@ -6,6 +6,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ELIO — Особистий профіль</title>
     <link rel="stylesheet" href="{% static 'user_page/style.css' %}">
+    <style>
+        /* Стилі для списку вибору категорій */
+        .selection-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .select-item {
+            background: #f8f9fa;
+            border: 2px solid #eee;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: left;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .select-item:hover {
+            border-color: #7b61ff;
+            background: #f0edff;
+        }
+        .select-item::before {
+            content: "●";
+            margin-right: 15px;
+            color: #7b61ff;
+        }
+        .back-btn {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            margin-top: 15px;
+            text-decoration: underline;
+        }
+        .form-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+    </style>
 </head>
 <body>
 
@@ -18,106 +63,150 @@
 
     <main class="content">
         <div class="dashboard">
-
             <section class="card mood-chart">
                 <h3 class="card-title">Аналітика настрою за тиждень</h3>
                 <div class="chart-container">
+                    {% for value in chart_data %}
                     <div class="bar-wrapper">
-                        <div class="bar" style="height: {{ chart_data.0|default:0 }}%"></div>
-                        <span class="day-label">Пн</span>
+                        <div class="bar" style="height: {{ value|default:0 }}%"></div>
+                        <span class="day-label">
+                            {% if forloop.counter == 1 %}Пн{% elif forloop.counter == 2 %}Вт{% elif forloop.counter == 3 %}Ср{% elif forloop.counter == 4 %}Чт{% elif forloop.counter == 5 %}Пт{% elif forloop.counter == 6 %}Сб{% else %}Нд{% endif %}
+                        </span>
                     </div>
-                    <div class="bar-wrapper">
-                        <div class="bar" style="height: {{ chart_data.1|default:0 }}%"></div>
-                        <span class="day-label">Вт</span>
-                    </div>
-                    <div class="bar-wrapper">
-                        <div class="bar" style="height: {{ chart_data.2|default:0 }}%"></div>
-                        <span class="day-label">Ср</span>
-                    </div>
-                    <div class="bar-wrapper">
-                        <div class="bar" style="height: {{ chart_data.3|default:0 }}%"></div>
-                        <span class="day-label">Чт</span>
-                    </div>
-                    <div class="bar-wrapper">
-                        <div class="bar" style="height: {{ chart_data.4|default:0 }}%"></div>
-                        <span class="day-label">Пт</span>
-                    </div>
-                    <div class="bar-wrapper">
-                        <div class="bar" style="height: {{ chart_data.5|default:0 }}%"></div>
-                        <span class="day-label">Сб</span>
-                    </div>
-                    <div class="bar-wrapper">
-                        <div class="bar" style="height: {{ chart_data.6|default:0 }}%"></div>
-                        <span class="day-label">Нд</span>
-                    </div>
+                    {% endfor %}
                 </div>
             </section>
 
             <section class="stats-grid">
                 <div class="card stat-box">
-                    <span class="stat-value">{{ days_count }}</span>
+                    <span class="stat-value">{{ days_count|default:0 }}</span>
                     <span class="stat-label">Днів поспіль</span>
                 </div>
                 <div class="card stat-box">
-                    <span class="stat-value">{{ peace_percentage }}%</span>
+                    <span class="stat-value">{{ peace_percentage|default:0 }}%</span>
                     <span class="stat-label">Спокою</span>
                 </div>
             </section>
-
         </div>
     </main>
 
     <nav class="bottom-nav">
-        <a href="{% url 'calendar_view' %}" class="nav-link">
-            <div class="icon-placeholder"></div>
-            <span class="link-text">Календар</span>
-        </a>
+        <a href="{% url 'calendar_view' %}" class="nav-link"><div class="icon-placeholder">📅</div><span class="link-text">Календар</span></a>
+        <a href="{% url 'advice_list' %}" class="nav-link"><div class="icon-placeholder">💡</div><span class="link-text">Поради</span></a>
 
-        <a href="#" class="nav-link">
-            <div class="icon-placeholder"></div>
-            <span class="link-text">Поради</span>
-        </a>
-
-        <div class="add-action">
+        <div class="add-action" onclick="toggleModal('add-mood-modal', true)" style="cursor: pointer;">
             <button class="main-add-btn">+</button>
             <span class="add-text">Додати</span>
         </div>
 
-        <a href="#" class="nav-link">
-            <div class="icon-placeholder"></div>
-            <span class="link-text">Психологи</span>
-        </a>
-
-        <a href="#" class="nav-link">
-            <div class="icon-placeholder"></div>
-            <span class="link-text">Налаштування</span>
-        </a>
+        <a href="#" class="nav-link"><div class="icon-placeholder">🤝</div><span class="link-text">Психологи</span></a>
+        <a href="#" class="nav-link"><div class="icon-placeholder">⚙️</div><span class="link-text">Налаштування</span></a>
     </nav>
 
-    <div id="elio-welcome" class="elio-overlay">
-        <div class="elio-modal">
-            <div class="elio-character">
-                <div class="elio-avatar">Еліо</div>
+    <div id="add-mood-modal" class="elio-overlay" style="display: none;">
+        <div class="elio-modal add-modal">
+            <button class="close-btn" onclick="toggleModal('add-mood-modal', false)">×</button>
+
+            <div id="step-selection">
+                <h2 style="text-align: center;">Додати</h2>
+                <div class="selection-list">
+                    <div class="select-item" onclick="showStep('mood')">Настрій</div>
+                    <div class="select-item" onclick="showStep('note')">Нотатки</div>
+                    <div class="select-item" onclick="showStep('panic')">Панічна атака</div>
+                </div>
             </div>
+
+            <form method="POST" action="{% url 'add_mood' %}" id="main-mood-form">
+                {% csrf_token %}
+
+                <div id="field-mood" style="display: none;">
+                    <h3>Який у вас настрій?</h3>
+                    <select name="mood_level" class="form-input" style="width: 100%; padding: 12px; border-radius: 12px;">
+                        <option value="5">🤩 Чудово</option>
+                        <option value="4">😊 Добре</option>
+                        <option value="3" selected>😐 Нормально</option>
+                        <option value="2">😔 Погано</option>
+                        <option value="1">😫 Жахливо</option>
+                    </select>
+                </div>
+
+                <div id="field-note" style="display: none;">
+                    <h3>Що у вас на думці?</h3>
+                    <textarea name="note" class="form-input" style="width: 100%; height: 100px; padding: 12px; border-radius: 12px;" placeholder="Ваші нотатки..."></textarea>
+                </div>
+
+                <div id="field-panic" style="display: none;">
+                    <h3>Чи була у вас панічна атака?</h3>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-top: 15px;">
+                        <input type="checkbox" name="had_panic_attack" id="panic-check" style="width: 20px; height: 20px;">
+                        <label for="panic-check" style="color: #ff4d4d; font-weight: bold; font-size: 18px;">Так, була</label>
+                    </div>
+                </div>
+
+                <div id="form-actions" class="form-actions" style="display: none;">
+                    <button type="submit" class="save-btn" style="width: 100%; background: #7b61ff; color: white; padding: 15px; border: none; border-radius: 25px; font-weight: bold;">Зберегти стан</button>
+                    <button type="button" onclick="showStep('selection')" class="back-btn">← Назад до списку</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="elio-welcome" class="elio-overlay" style="display: none;">
+        <div class="elio-modal">
+            <div class="elio-character"><div class="elio-avatar">Еліо</div></div>
             <div class="elio-bubble">
-                <p>Привіт! Я — Еліо. Поділися зі мною своїм настроєм сьогодні!</p>
+                <p id="elio-text"></p>
                 <button onclick="closeElio()" class="elio-confirm-btn">Обов'язково!</button>
             </div>
         </div>
     </div>
 
     <script>
+        // Логіка Еліо та знайомства
         window.addEventListener('load', function() {
-            setTimeout(function() {
-                const elio = document.getElementById('elio-welcome');
-                if (elio) elio.style.display = 'flex';
-            }, 800);
+            const hasMetElio = localStorage.getItem('metElio');
+            const elioModal = document.getElementById('elio-welcome');
+            const elioText = document.getElementById('elio-text');
+
+            if (!hasMetElio) {
+                elioText.innerText = "Привіт! Я — Еліо, я твій помічник. Поділишся своїм настроєм?";
+                setTimeout(() => {
+                    if (elioModal) elioModal.style.display = 'flex';
+                }, 800);
+            }
         });
 
         function closeElio() {
+            localStorage.setItem('metElio', 'true');
             document.getElementById('elio-welcome').style.display = 'none';
         }
-    </script>
 
+        // Керування вікнами
+        function toggleModal(modalId, show) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.style.display = show ? 'flex' : 'none';
+            if (modalId === 'add-mood-modal' && show) showStep('selection');
+        }
+
+        function showStep(step) {
+            const ids = ['step-selection', 'field-mood', 'field-note', 'field-panic', 'form-actions'];
+            ids.forEach(id => document.getElementById(id).style.display = 'none');
+
+            if (step === 'selection') {
+                document.getElementById('step-selection').style.display = 'block';
+            } else {
+                document.getElementById('field-' + step).style.display = 'block';
+                document.getElementById('form-actions').style.display = 'flex';
+            }
+        }
+
+        // Закриття при кліку поза вікном
+        window.onclick = function(event) {
+            if (event.target.classList.contains('elio-overlay')) {
+                event.target.style.display = 'none';
+                if (event.target.id === 'elio-welcome') localStorage.setItem('metElio', 'true');
+            }
+        }
+    </script>
 </body>
 </html>

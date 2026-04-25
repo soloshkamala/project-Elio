@@ -3,9 +3,13 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.11 (ELIO)" />
   </component>
+<<<<<<< Updated upstream
 <<<<<<< HEAD
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.9 (Elio_Project_ELIO)" project-jdk-type="Python SDK" />
 =======
   <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.13 (PythonProject)" project-jdk-type="Python SDK" />
 >>>>>>> faf46a4 (одано сторінку обраного, детальну сторінку та клікабельні картки)
+=======
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.11 (ELIO)" project-jdk-type="Python SDK" />
+>>>>>>> Stashed changes
 </project>
