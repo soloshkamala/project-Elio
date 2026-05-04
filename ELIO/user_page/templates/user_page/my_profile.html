@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мій профіль — ELIO</title>
+    <link rel="stylesheet" href="{% static 'user_page/style.css' %}">
+</head>
+<body>
+    <div class="settings-page">
+        <header class="settings-header">
+            <a href="{% url 'settings' %}" class="back-btn">← Назад</a>
+            <h1 class="settings-title">Мій профіль</h1>
+        </header>
+
+        <form class="profile-form" id="profileForm" method="POST">
+            {% csrf_token %}
+
+            <div class="input-group">
+                <label>Ім'я</label>
+                <input type="text" name="first_name" id="id_first_name"
+                       value="{{ profile.first_name }}" readonly class="locked">
+            </div>
+
+            <div class="input-group">
+                <label>Прізвище</label>
+                <input type="text" name="last_name" id="id_last_name"
+                       value="{{ profile.last_name }}" readonly class="locked">
+            </div>
+
+            <div class="input-group">
+                <label>Дата народження</label>
+                <input type="date" name="birth_date" id="id_birth_date"
+                       value="{{ profile.birth_date|date:'Y-m-d' }}" readonly class="locked">
+            </div>
+
+            <div class="input-group">
+                <label>Стать</label>
+                <select name="gender" id="id_gender" disabled class="locked">
+                    <option value="M" {% if profile.gender == 'M' %}selected{% endif %}>Чоловіча</option>
+                    <option value="F" {% if profile.gender == 'F' %}selected{% endif %}>Жіноча</option>
+                </select>
+            </div>
+
+            <div class="form-actions-profile">
+                <button type="button" id="editBtn" class="edit-btn-profile">Змінити дані</button>
+
+                <button type="submit" id="saveBtn" class="save-btn-profile" style="display: none;">Зберегти зміни</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const editBtn = document.getElementById('editBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const formInputs = document.querySelectorAll('#profileForm input, #profileForm select');
+
+        editBtn.addEventListener('click', function() {
+            formInputs.forEach(input => {
+                input.removeAttribute('readonly');
+                input.removeAttribute('disabled');
+                input.classList.remove('locked');
+                input.classList.add('unlocked');
+            });
+
+            editBtn.style.display = 'none';
+            saveBtn.style.display = 'block';
+        });
+    </script>
+</body>
+</html>

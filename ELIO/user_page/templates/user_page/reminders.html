@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Нагадування — ELIO</title>
+    <link rel="stylesheet" href="{% static 'user_page/style.css' %}">
+</head>
+<body>
+    <div class="settings-page">
+        <header class="settings-header">
+            <a href="{% url 'settings' %}" class="back-btn">← Назад</a>
+            <h1 class="settings-title">Нагадування</h1>
+        </header>
+
+        <main style="padding: 20px;">
+            <form method="POST" id="remindersForm">
+                {% csrf_token %}
+                <div style="display: flex; align-items: center; gap: 15px; background: white; padding: 20px; border-radius: 15px; cursor: pointer;">
+                    <input type="checkbox" name="reminders_enabled" id="reminders_check"
+                           {% if profile.reminders_enabled %}checked{% endif %}
+                           style="width: 25px; height: 25px; cursor: pointer;">
+                    <label for="reminders_check" style="font-size: 18px; cursor: pointer; flex-grow: 1;">
+                        Дозволити щоденні нагадування
+                    </label>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('reminders_check').addEventListener('change', function() {
+            document.getElementById('remindersForm').submit();
+        });
+    </script>
+</body>
+</html>
