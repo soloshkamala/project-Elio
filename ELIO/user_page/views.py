@@ -4,7 +4,6 @@ from .models import MoodEntry
 from django.db.models.functions import TruncDate
 from django.db.models import Avg, Count
 
-
 def show_user_page(request):
     months_ukr = {1: "січня", 2: "лютого", 3: "березня", 4: "квітня", 5: "травня", 6: "червня",
                   7: "липня", 8: "серпня", 9: "вересня", 10: "жовтня", 11: "листопада", 12: "грудня"}

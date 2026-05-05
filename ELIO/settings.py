@@ -1,23 +1,17 @@
 import os
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-6)2=!2nz&b=(_o13grgn11u61qhd^e9#@t1q=hag8ng-u)ccyu'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 ALLOWED_HOSTS = []
+#DEBUG = False
+#ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
-
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -29,9 +23,8 @@ INSTALLED_APPS = [
 
     'ELIO.calendar_app',
     'ELIO.user_page',
-     'advice',
+    'advice',
     'accounts',
-    'core',
 
 ]
 
@@ -43,6 +36,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.LoginRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'ELIO.urls'
@@ -66,8 +60,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ELIO.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+
 
 DATABASES = {
     'default': {
@@ -77,8 +70,6 @@ DATABASES = {
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -96,8 +87,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'uk'
 
@@ -108,8 +97,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
 
@@ -117,11 +104,27 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
     BASE_DIR / "accounts" / "img",
 ]
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = '/home/'
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
-LOGOUT_REDIRECT_URL = '/home/'
+AUTHENTICATION_BACKENDS = [
+    'accounts.backends.EmailOrUsernameModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+LOGIN_REDIRECT_URL = 'user_home'
+
+LOGOUT_REDIRECT_URL = 'home'
+
+LOGIN_URL = 'login'
+
+SESSION_COOKIE_HTTPONLY = True
+
+CSRF_COOKIE_HTTPONLY = True
+
+X_FRAME_OPTIONS = 'DENY'
