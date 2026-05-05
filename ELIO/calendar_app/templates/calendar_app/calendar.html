@@ -1,60 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Elio - Ментальне здоров'я</title>
+    <title>Elio - Щоденник стану</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; margin: 0; padding: 20px; }
-        h1 { text-align: center; color: #4a90e2; }
-
-        /* Контейнер для карток місяців */
         .months-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
-
         .month-card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 300px; }
-        .month-title { text-align: center; font-weight: bold; margin-bottom: 15px; color: #333; }
-
         .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .day-name { font-size: 12px; font-weight: bold; color: #adb5bd; padding-bottom: 10px; }
-
-        .day { padding: 10px 0; border-radius: 10px; border: 1px solid #f8f9fa; cursor: pointer; transition: 0.2s; }
-        .day:hover:not(.empty) { background-color: #e3f2fd; border-color: #4a90e2; }
+        .day { padding: 10px 0; border-radius: 10px; border: 1px solid #f8f9fa; cursor: pointer; position: relative; }
+        .day:hover:not(.empty) { background-color: #e3f2fd; }
         .empty { border: none; color: transparent; cursor: default; }
+        .edit-icon { position: absolute; top: 2px; right: 2px; font-size: 10px; display: none; }
+        .day:hover .edit-icon { display: block; }
 
-        /* Стилі для ШТОРКИ (Drawer) */
+        /* ШТОРКА */
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; z-index: 998; }
-
         .drawer {
-            position: fixed; bottom: -100%; left: 0; width: 100%;
+            position: fixed; bottom: -100%; left: 0; width: 100%; max-height: 85%;
             background: white; border-radius: 30px 30px 0 0;
-            padding: 30px; box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
-            transition: 0.4s ease-out; z-index: 999; text-align: center;
+            padding: 25px; box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+            transition: 0.4s ease-out; z-index: 999; overflow-y: auto;
         }
         .drawer.active { bottom: 0; }
         .overlay.active { display: block; }
 
-        .emoji-list { display: flex; justify-content: center; gap: 25px; margin: 20px 0; font-size: 45px; }
+        .section-title { font-size: 18px; font-weight: bold; margin: 20px 0 10px; color: #4a90e2; text-align: center; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; }
+        .emoji-list { display: flex; justify-content: center; gap: 20px; font-size: 40px; }
         .emoji-item { cursor: pointer; transition: 0.2s; }
-        .emoji-item:hover { transform: scale(1.3); }
+        .emoji-item:hover { transform: scale(1.2); }
 
-        .close-btn { background: #f1f3f5; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; color: #666; }
+        /* СЕКЦІЯ СНУ */
+        .sleep-score-box { text-align: center; background: #f8f9ff; padding: 15px; border-radius: 15px; }
+        .sleep-range { width: 80%; cursor: pointer; accent-color: #4a90e2; }
+        .score-display { font-size: 24px; font-weight: bold; color: #4a90e2; margin-top: 5px; }
+
+        .notes-area { width: 100%; height: 70px; border-radius: 15px; border: 1px solid #ddd; padding: 10px; margin-top: 10px; box-sizing: border-box; font-family: inherit; }
+        .chart-container { width: 100%; max-width: 500px; margin: 10px auto; height: 180px; }
+        .save-btn { background: #4a90e2; color: white; border: none; padding: 15px; border-radius: 15px; cursor: pointer; width: 100%; margin-top: 20px; font-weight: bold; font-size: 16px; }
     </style>
 </head>
 <body>
 
-    <h1>Мій стан Elio</h1>
+    <h1 style="text-align: center; color: #2d3436;">Мій щоденник Elio</h1>
 
     <div class="months-container">
         {% for month in months %}
         <div class="month-card">
-            <div class="month-title">{{ month.name }} {{ month.year }}</div>
+            <h3 style="text-align:center">{{ month.name }} {{ month.year }}</h3>
             <div class="grid">
-                <div class="day-name">Пн</div><div class="day-name">Вт</div><div class="day-name">Ср</div>
-                <div class="day-name">Чт</div><div class="day-name">Пт</div><div class="day-name">Сб</div><div class="day-name">Нд</div>
+                <div style="font-weight:bold; color:#adb5bd; font-size:12px">Пн</div>
+                <div style="font-weight:bold; color:#adb5bd; font-size:12px">Вт</div>
+                <div style="font-weight:bold; color:#adb5bd; font-size:12px">Ср</div>
+                <div style="font-weight:bold; color:#adb5bd; font-size:12px">Чт</div>
+                <div style="font-weight:bold; color:#adb5bd; font-size:12px">Пт</div>
+                <div style="font-weight:bold; color:#adb5bd; font-size:12px">Сб</div>
+                <div style="font-weight:bold; color:#adb5bd; font-size:12px">Нд</div>
 
                 {% for week in month.weeks %}
                     {% for day in week %}
-                        <div class="day {% if day == 0 %}empty{% endif %}"
-                             onclick="openDrawer('{{ day }}', '{{ month.name }}')">
-                            {% if day != 0 %}{{ day }}{% endif %}
+                        <div class="day {% if day == 0 %}empty{% endif %}" onclick="openDrawer('{{ day }}', '{{ month.name }}')">
+                            {% if day != 0 %}
+                                {{ day }}
+                                <span class="edit-icon">✏️</span>
+                            {% endif %}
                         </div>
                     {% endfor %}
                 {% endfor %}
@@ -65,23 +74,44 @@
 
     <div class="overlay" id="overlay" onclick="closeDrawer()"></div>
     <div class="drawer" id="drawer">
-        <h3 id="drawer-date">Як ви почуваєтесь?</h3>
+        <h2 id="drawer-date" style="text-align: center; margin-top: 0;">Дата</h2>
+
+        <div class="section-title">Твій настрій ✨</div>
         <div class="emoji-list">
-            <span class="emoji-item" onclick="selectMood('✨')">✨</span>
-            <span class="emoji-item" onclick="selectMood('😊')">😊</span>
-            <span class="emoji-item" onclick="selectMood('😐')">😐</span>
-            <span class="emoji-item" onclick="selectMood('😔')">😔</span>
-            <span class="emoji-item" onclick="selectMood('😫')">😫</span>
+            <span class="emoji-item" onclick="setMood('✨')">✨</span>
+            <span class="emoji-item" onclick="setMood('😊')">😊</span>
+            <span class="emoji-item" onclick="setMood('😐')">😐</span>
+            <span class="emoji-item" onclick="setMood('😔')">😔</span>
+            <span class="emoji-item" onclick="setMood('😫')">😫</span>
         </div>
-        <button class="close-btn" onclick="closeDrawer()">Скасувати</button>
+
+        <div class="section-title">Сон 🌙</div>
+        <div class="sleep-score-box">
+            <p style="margin: 0 0 10px; color: #666;">Оціни якість сну (1-10):</p>
+            <input type="range" min="1" max="10" value="7" class="sleep-range" id="sleepRange" oninput="updateSleepScore(this.value)">
+            <div class="score-display" id="sleepScoreValue">7</div>
+        </div>
+
+        <div class="section-title">Нотатки ✏️</div>
+        <textarea class="notes-area" placeholder="Що цікавого сталося сьогодні?"></textarea>
+
+        <div class="section-title">Статистика (год сну) 📊</div>
+        <div class="chart-container">
+            <canvas id="sleepChart"></canvas>
+        </div>
+
+        <button class="save-btn" onclick="saveAll()">Зберегти день</button>
     </div>
 
     <script>
+        let myChart;
+
         function openDrawer(day, month) {
             if (day === '0') return;
-            document.getElementById('drawer-date').innerText = "Який ваш стан " + day + " " + month + "?";
+            document.getElementById('drawer-date').innerText = day + " " + month;
             document.getElementById('drawer').classList.add('active');
             document.getElementById('overlay').classList.add('active');
+            initChart();
         }
 
         function closeDrawer() {
@@ -89,11 +119,44 @@
             document.getElementById('overlay').classList.remove('active');
         }
 
-        function selectMood(emoji) {
-            alert("Ваш стан збережено: " + emoji);
+        function updateSleepScore(val) {
+            document.getElementById('sleepScoreValue').innerText = val;
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('sleepChart').getContext('2d');
+            if (myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'],
+                    datasets: [{
+                        label: 'Години сну',
+                        data: [7, 6, 8, 7, 6, 9, 8],
+                        borderColor: '#4a90e2',
+                        backgroundColor: 'rgba(74, 144, 226, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function setMood(emoji) {
+            alert("Настрій збережено: " + emoji);
+        }
+
+        function saveAll() {
+            const score = document.getElementById('sleepRange').value;
+            alert("Дані збережено! Оцінка сну: " + score + "/10");
             closeDrawer();
         }
     </script>
-
 </body>
 </html>
