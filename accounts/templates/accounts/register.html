@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <script>
+        (function() {
+            const saved = localStorage.getItem('elio-theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', saved);
+        })();
+    </script>
+    <title>Реєстрація — Elio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        :root { --accent: #ff9a9e; --bg: #fdf6f0; }
+        [data-bs-theme="dark"] { --bg: #1e1e2e; }
+
+        body {
+            background-color: var(--bg);
+            font-family: 'Nunito', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Анімація появи всієї карти */
+        .fade-in {
+            animation: fadeIn 0.8s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 40px;
+            padding: 50px;
+            border: 2px solid white;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        }
+        [data-bs-theme="dark"] .auth-card { background: #2b2b3d; border-color: #444; }
+
+        .btn-main {
+            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
+            border: none; color: white; font-weight: 800;
+            padding: 15px; border-radius: 20px; width: 100%;
+            transition: 0.3s;
+        }
+        .btn-main:hover { transform: scale(1.02); box-shadow: 0 10px 20px rgba(255,154,158,0.4); }
+
+        /* Маскот, що підглядає */
+        .peeking-mascot {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            z-index: 10;
+        }
+
+        input {
+            border-radius: 15px !important;
+            padding: 12px 20px !important;
+            border: 2px solid #f0f0f0 !important;
+            margin-bottom: 10px;
+        }
+        input:focus { border-color: var(--accent) !important; box-shadow: none !important; }
+
+        .theme-toggle {
+            position: fixed; top: 20px; right: 20px;
+            width: 50px; height: 50px; border-radius: 50%;
+            background: white; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body class="d-flex align-items-center vh-100">
+
+    <button id="themeBtn" class="theme-toggle shadow-sm"><i class="bi bi-moon-fill"></i></button>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 position-relative fade-in">
+
+                <!-- МАСКОТ-ЛОГО (image_3b3336.png) -->
+                <img src="{% static 'logo.png' %}" class="peeking-mascot" alt="Elio">
+
+                <div class="auth-card">
+                    <h2 class="fw-black text-center mb-4">Приєднатися</h2>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <!-- Виводимо форму без зайвого тексту -->
+                        {% for field in form %}
+                            <div class="mb-2">
+                                <label class="fw-bold ms-2 mb-1 small opacity-75">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="text-danger small ms-2">{{ field.errors|first }}</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <button type="submit" class="btn btn-main mt-4 text-uppercase">Створити аккаунт</button>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <a href="{% url 'home' %}" class="text-decoration-none text-muted small">← Повернутися назад</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const btn = document.getElementById('themeBtn');
+        const icon = btn.querySelector('i');
+        const html = document.documentElement;
+
+        function updateThemeIcon(theme) {
+            icon.className = theme === 'light' ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
+        }
+
+        btn.onclick = () => {
+            const current = html.getAttribute('data-bs-theme');
+            const target = current === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-bs-theme', target);
+            localStorage.setItem('elio-theme', target);
+            updateThemeIcon(target);
+        };
+
+        updateThemeIcon(localStorage.getItem('elio-theme') || 'light');
+    </script>
+</body>
+</html>
