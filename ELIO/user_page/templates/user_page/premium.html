@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'user_page/style.css' %}">
+    <title>Преміум підписка — ELIO</title>
+</head>
+<body>
+    <div class="settings-page">
+        <header class="settings-header">
+
+            <a href="javascript:history.back()" class="back-btn">← Назад</a>
+            <h1 class="settings-title">Вибір плану</h1>
+        </header>
+
+        <main style="padding: 10px;">
+            <table border="1" style="width: 100%; border-collapse: collapse; margin-top: 20px; text-align: center;">
+                <thead>
+                    <tr style="background-color: #f2f2f2;">
+                        <th style="padding: 10px;">БАЗОВА ВЕРСІЯ</th>
+                        <th style="padding: 10px;">ПРЕМІУМ ВЕРСІЯ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 10px;">Короткі записи про день, настрій та думки</td>
+                        <td style="padding: 10px;">Глибокий аналіз патернів мислення</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px;">Загальні поради, обмежена кількість на день, нагадування</td>
+                        <td style="padding: 10px;">Персоналізовані поради, частіші підказки, "екстрені" поради під час тривожності</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px;">Базові графіки настрою та частоти панічних атак</td>
+                        <td style="padding: 10px;">Детальні графіки та аналітика тригерів, персональні рекомендації</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px;">Загальні вправи, які доступні усім</td>
+                        <td style="padding: 10px;">Персональні поради та вправи</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px;">Каталог психологів, інтеграція з Mindly</td>
+                        <td style="padding: 10px;">Прямий доступ до психологів-партнерів Elio</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <h2 style="color: #7b61ff; margin-bottom: 5px;">ELIO PREMIUM</h2>
+                <p style="font-size: 28px; font-weight: bold; margin: 10px 0;">199 грн / місяць</p>
+
+                <a href="{% url 'checkout' %}" style="text-decoration: none;">
+                    <button class="save-btn" style="width: 250px;">Активувати</button>
+                </a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

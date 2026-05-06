@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'user_page/style.css' %}">
+    <title>Налаштування</title>
+</head>
+<body>
+    <div class="settings-page">
+        <header class="settings-header">
+            <a href="{% url 'user_home' %}" class="back-btn">← Назад</a>
+            <h1 class="settings-title">Налаштування</h1>
+        </header>
+        <nav class="settings-nav">
+            <a href="{% url 'my_profile' %}" class="menu-card">Мій профіль</a>
+            <a href="{% url 'charts_reports' %}" class="menu-card">Графіки та звіти</a>
+            <a href="{% url 'reminders' %}" class="menu-card">Нагадування</a>
+            <a href="{% url 'premium' %}" class="menu-card">Преміум підписка</a>
+        </nav>
+    </div>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'user_page/style.css' %}">
+    <title>Графіки та звіти</title>
+</head>
+<body>
+    <div class="settings-page">
+        <header class="settings-header">
+            <a href="{% url 'settings' %}" class="back-btn">← Назад</a>
+            <h1 class="settings-title">Графіки та звіти</h1>
+        </header>
+        <div class="charts-menu">
+            <button class="menu-card">Графік настрою</button>
+            <button class="menu-card">Тривалість атак</button>
+        </div>
+    </div>
+</body>
+</html>

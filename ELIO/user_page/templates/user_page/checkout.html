@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'user_page/style.css' %}">
+    <title>Оплата ELIO Premium</title>
+</head>
+<body>
+    <div class="settings-page">
+        <header class="settings-header">
+            <a href="javascript:history.back()" class="back-btn">← Назад</a>
+            <h1 class="settings-title">Оплата</h1>
+        </header>
+
+        <main style="padding: 20px; text-align: center;">
+            <div style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                <h3 style="margin-bottom: 20px;">Оформлення підписки</h3>
+                <p style="color: #7b61ff; font-weight: bold; font-size: 20px;">Сума до сплати: 199 грн</p>
+
+                <form style="margin-top: 20px; text-align: left;">
+                    <div class="input-group">
+                        <label>Номер картки</label>
+                        <input type="text" placeholder="0000 0000 0000 0000" maxlength="19">
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <div class="input-group" style="flex: 1;">
+                            <label>Термін дії</label>
+                            <input type="text" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="input-group" style="flex: 1;">
+                            <label>CVC</label>
+                            <input type="password" placeholder="***" maxlength="3">
+                        </div>
+                    </div>
+
+                    <button type="button" class="save-btn" style="margin-top: 20px; width: 100%;"
+                            onclick="alert('Дякуємо! Оплата пройшла успішно (це демонстраційна версія).')">
+                        Оплатити зараз
+                    </button>
+                </form>
+            </div>
+
+            <p style="margin-top: 20px; color: #888; font-size: 12px;">
+                Ваші дані захищені за стандартом PCI DSS
+            </p>
+        </main>
+    </div>
+</body>
+</html>
