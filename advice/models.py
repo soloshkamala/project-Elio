@@ -1,4 +1,6 @@
 from django.db import models
+from django.conf import settings
+
 
 class Article(models.Model):
     CATEGORY_CHOICES = [
@@ -13,8 +15,13 @@ class Article(models.Model):
         default='advice',
         verbose_name="Категорія"
     )
+    card_color = models.CharField(max_length=7, default='#ff4b2b', verbose_name="Колір картки (HEX)")
 
-    card_color = models.CharField(max_length=7, default='#FCE4EC', verbose_name="Колір картки (HEX)")
-    is_favorite = models.BooleanField(default=False, verbose_name="В обраному")
+    favorites = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='favorite_articles',
+        blank=True
+    )
+
     def __str__(self):
         return self.title

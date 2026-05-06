@@ -1,11 +1,12 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="uk" id="html-root">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ELIO — Особистий профіль</title>
     <link rel="stylesheet" href="{% static 'user_page/style.css' %}">
+
     <style>
         .selection-list { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
         .select-item { background: #f8f9fa; border: 2px solid #eee; border-radius: 15px; padding: 15px; text-align: left; font-size: 18px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; }
@@ -13,17 +14,43 @@
         .select-item::before { content: "●"; margin-right: 15px; color: #7b61ff; }
         .back-btn-modal { background: none; border: none; color: #888; cursor: pointer; margin-top: 15px; text-decoration: underline; }
         .form-actions { display: flex; flex-direction: column; align-items: center; margin-top: 20px; gap: 10px; }
+
+        [data-theme="dark"] body { background-color: #121212 !important; color: #f5f5f5 !important; }
+        [data-theme="dark"] .top-bar { background-color: #1e1e1e !important; color: #f5f5f5 !important; }
+        [data-theme="dark"] .card,
+        [data-theme="dark"] .stat-box { background-color: #1e1e1e !important; box-shadow: 0 5px 15px rgba(0,0,0,0.3) !important; border: 1px solid #333 !important; }
+        [data-theme="dark"] .stat-value,
+        [data-theme="dark"] .card-title,
+        [data-theme="dark"] .date { color: #fff !important; }
+        [data-theme="dark"] .bottom-nav { background-color: #1a1a1a !important; border-top: 1px solid #333 !important; }
+        [data-theme="dark"] .nav-link .link-text { color: #aaa !important; }
+        [data-theme="dark"] .elio-modal { background-color: #1e1e1e !important; color: #fff !important; border: 1px solid #444 !important; }
+        [data-theme="dark"] .select-item { background-color: #2a2a2a !important; color: #fff !important; border-color: #444 !important; }
+        [data-theme="dark"] .select-item:hover { border-color: #7b61ff !important; background: #3a3a4a !important; }
+        [data-theme="dark"] .form-input { background-color: #2a2a2a !important; color: #fff !important; border: 1px solid #444 !important; }
     </style>
 </head>
 <body>
 
-    <header class="top-bar">
+    <header class="top-bar" style="display: flex; justify-content: space-between; align-items: center;">
         <div class="date-container">
             <span class="date">{{ current_date }}</span>
         </div>
-        <a href="{% url 'premium' %}" style="text-decoration: none;">
-            <button class="premium-btn">Преміум підписка</button>
-        </a>
+
+        <div style="display: flex; align-items: center; gap: 15px;">
+
+            <button id="profileThemeBtn" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; padding: 0;">🌙</button>
+
+            <a href="{% url 'premium' %}" style="text-decoration: none;">
+                <button class="premium-btn">Преміум підписка</button>
+            </a>
+
+            <form action="{% url 'logout' %}" method="post" style="margin: 0;">
+                {% csrf_token %}
+                <button type="submit" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 0;" title="Вийти з акаунту">🚪</button>
+            </form>
+
+        </div>
     </header>
 
     <main class="content">
@@ -55,7 +82,6 @@
         </div>
     </main>
 
-    <!-- ТВОЯ ОРИГІНАЛЬНА ПАНЕЛЬ З ПРАВИЛЬНИМИ ПОСИЛАННЯМИ -->
     <nav class="bottom-nav">
         <a href="{% url 'calendar_view' %}" class="nav-link"><div class="icon-placeholder">📅</div><span class="link-text">Календар</span></a>
         <a href="{% url 'advice_list' %}" class="nav-link"><div class="icon-placeholder">💡</div><span class="link-text">Поради</span></a>
@@ -69,7 +95,6 @@
         <a href="{% url 'settings' %}" class="nav-link"><div class="icon-placeholder">⚙️</div><span class="link-text">Налаштування</span></a>
     </nav>
 
-    <!-- МОДАЛЬНЕ ВІКНО ДОДАВАННЯ -->
     <div id="add-mood-modal" class="elio-overlay" style="display: none;">
         <div class="elio-modal add-modal">
             <button class="close-btn" onclick="toggleModal('add-mood-modal', false)">×</button>
@@ -128,6 +153,30 @@
                 document.getElementById('form-actions').style.display = 'flex';
             }
         }
+
+        (function() {
+            const htmlRoot = document.getElementById('html-root');
+            const themeBtn = document.getElementById('profileThemeBtn');
+
+            // Перевіряємо локальне сховище
+            const savedTheme = localStorage.getItem('elio-theme');
+            if (savedTheme === 'dark') {
+                htmlRoot.setAttribute('data-theme', 'dark');
+                themeBtn.innerText = '☀️';
+            }
+
+            themeBtn.onclick = function() {
+                if (htmlRoot.getAttribute('data-theme') === 'dark') {
+                    htmlRoot.removeAttribute('data-theme');
+                    localStorage.setItem('elio-theme', 'light');
+                    themeBtn.innerText = '🌙';
+                } else {
+                    htmlRoot.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('elio-theme', 'dark');
+                    themeBtn.innerText = '☀️';
+                }
+            };
+        })();
     </script>
 </body>
 </html>
