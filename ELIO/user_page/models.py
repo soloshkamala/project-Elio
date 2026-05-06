@@ -1,6 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
-
+from django.conf import settings
 
 class MoodEntry(models.Model):
     MOOD_CHOICES = [
@@ -10,11 +9,11 @@ class MoodEntry(models.Model):
         (4, '😊 Добре'),
         (5, '🤩 Чудово'),
     ]
+    # Твій код без змін
     date_time = models.DateTimeField(auto_now_add=True)
     mood_level = models.IntegerField(choices=MOOD_CHOICES)
     note = models.TextField(blank=True, null=True)
     had_panic_attack = models.BooleanField(default=False)
-
 
 class UserProfile(models.Model):
     GENDER_CHOICES = [
@@ -22,7 +21,11 @@ class UserProfile(models.Model):
         ('F', 'Жіноча'),
     ]
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='profile'
+    )
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, blank=True)
