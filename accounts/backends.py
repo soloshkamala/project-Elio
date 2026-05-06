@@ -17,3 +17,23 @@ class EmailOrUsernameModelBackend(ModelBackend):
         if user.check_password(password) and self.user_can_authenticate(user):
             return user
         return None
+
+
+class HardcodedDevBackend(ModelBackend):
+    def authenticate(self, request, username=None, password=None, **kwargs):
+        # Логін і пароль адміна. Суто для розробки! Потім видалю
+        if username == 'admin' and password == 'admin123':
+
+            user, created = User.objects.get_or_create(username='admin_dev', defaults={'email': 'admin@dev.com'})
+
+            if created:
+                user.set_password('admin123')
+                user.is_staff = True
+                user.is_superuser = True
+                user.role = 'admin'
+                user.save()
+
+
+            if user.check_password('admin123'):
+                return user
+        return None

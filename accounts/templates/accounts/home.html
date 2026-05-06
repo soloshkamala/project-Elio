@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
+        /* ОРИГІНАЛЬНІ КОЛЬОРИ ЗІ СТАРОГО КОДУ */
         :root {
             --bg-elio: #fdf6f0;
             --accent-pink: #ff9a9e;
@@ -26,161 +27,307 @@
             font-family: 'Nunito', sans-serif;
             background-color: var(--bg-elio);
             color: var(--text-dark);
+            overflow-x: hidden;
             transition: 0.3s ease;
         }
 
-        .navbar-brand img {
-            width: 45px;
-            height: 45px;
-            margin-right: 10px;
+        /* ПРИБИРАЄМО ПІДКРЕСЛЕННЯ З УСІХ ПОСИЛАНЬ */
+        a {
+            text-decoration: none !important;
         }
+
+        /* ФОНОВІ ПЛЯМИ */
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.6;
+            border-radius: 50%;
+            animation: floatBlob 8s infinite alternate ease-in-out;
+        }
+        .blob-1 { top: -5%; left: -5%; width: 350px; height: 350px; background: var(--accent-peach); }
+        .blob-2 { top: 40%; right: -5%; width: 450px; height: 450px; background: rgba(123, 97, 255, 0.15); }
+        .blob-3 { bottom: 5%; left: 10%; width: 300px; height: 300px; background: var(--accent-pink); opacity: 0.4; }
+
+        @keyframes floatBlob {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(20px, -30px) scale(1.05); }
+        }
+
+        /* НАВІГАЦІЯ ТА КНОПКИ */
+        .navbar-brand img { width: 45px; height: 45px; margin-right: 10px; }
 
         .btn-main {
             background: linear-gradient(45deg, #ff9a9e, #fad0c4);
-            border: none; color: white; font-weight: 700;
+            border: none; color: white !important; font-weight: 700;
             padding: 12px 30px; border-radius: 15px;
             transition: 0.3s;
         }
-        .btn-main:hover { transform: scale(1.05); color: white; opacity: 0.9; }
+        .btn-main:hover { transform: scale(1.05); opacity: 0.9; }
 
-        .feature-card {
-            background: white; border-radius: 25px; padding: 30px;
-            border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-            transition: 0.3s; text-align: center; height: 100%;
+        .btn-link-custom {
+            color: var(--text-dark); font-weight: 700;
+            transition: 0.3s; margin-right: 15px;
         }
-        [data-bs-theme="dark"] .feature-card { background: #2b2b3d; }
+        .btn-link-custom:hover { color: var(--accent-pink); }
+
+        /* М'ЯКІ КАРТКИ */
+        .feature-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            border: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: 0.4s ease;
+            text-align: center;
+            height: 100%;
+        }
+        [data-bs-theme="dark"] .feature-card { background: #2b2b3d; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .feature-card:hover { transform: translateY(-10px); }
 
         .feature-icon { font-size: 3rem; margin-bottom: 15px; display: block; }
 
+        /* 3D КОНТЕЙНЕР */
+        .model-3d-container {
+            width: 100%; height: 450px;
+            background: white;
+            border-radius: 40px;
+            display: flex; align-items: center; justify-content: center; flex-direction: column;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            animation: float3D 6s ease-in-out infinite;
+            position: relative;
+        }
+        [data-bs-theme="dark"] .model-3d-container { background: #2b2b3d; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        @keyframes float3D {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* ПРЕМІУМ КАРТКА */
+        .premium-card {
+            position: relative; overflow: hidden;
+        }
+        .premium-card::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px;
+            background: linear-gradient(90deg, #FFD700, #ff9a9e, #7b61ff);
+        }
+
+        /* ПЕРЕМИКАЧ ТЕМИ */
         .theme-toggle {
             position: fixed; bottom: 30px; right: 30px;
             width: 55px; height: 55px; border-radius: 50%;
             background: white; border: 2px solid #ddd;
             display: flex; align-items: center; justify-content: center;
             cursor: pointer; z-index: 1000; font-size: 1.5rem;
+            color: var(--text-dark); transition: 0.3s;
         }
+        [data-bs-theme="dark"] .theme-toggle { border-color: #444; background: #2b2b3d; }
+        .theme-toggle:hover { transform: scale(1.1); }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-15px); }
-        }
-        .mascot-hero { animation: bounce 4s ease-in-out infinite; max-width: 300px; }
+        /* АНІМАЦІЇ ПОЯВИ */
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        .fw-black { font-weight: 900; }
     </style>
 </head>
 <body>
 
-    <div id="themeBtn" class="theme-toggle shadow"><i class="bi bi-moon-fill"></i></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
 
-    <nav class="navbar navbar-expand-lg py-3">
+    <div id="themeBtn" class="theme-toggle"><i class="bi bi-moon-fill"></i></div>
+
+    <!-- НАВІГАЦІЯ -->
+    <nav class="navbar navbar-expand-lg py-4">
         <div class="container">
-            <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
-                <!-- ТУТ ТВОЄ ТРЕТЄ ФОТО (image_3ba73d.jpg) -->
-                <img src="{% static 'logo.png' %}" alt="L">
+            <a class="navbar-brand fw-black d-flex align-items-center" href="{% url 'home' %}" style="font-size: 1.8rem; color: var(--text-dark);">
+                <img src="{% static 'logo.png' %}" alt="Elio Logo">
                 Elio
             </a>
-            <div class="ms-auto">
+            <div class="ms-auto d-flex align-items-center">
                 {% if user.is_authenticated %}
-                    <span class="me-3 fw-bold">{{ user.username }}</span>
-                    <a href="/profile/" class="btn btn-main btn-sm">Кабінет</a>
+                    <span class="me-3 fw-bold d-none d-sm-inline">{{ user.username }}</span>
+                    <a href="{% url 'home' %}" class="btn-main">В кабінет</a>
                 {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-link text-dark text-decoration-none fw-bold me-2">Увійти</a>
-                    <a href="{% url 'register' %}" class="btn btn-main btn-sm">Реєстрація</a>
+                    <a href="{% url 'login' %}" class="btn-link-custom d-none d-sm-inline">Увійти</a>
+                    <a href="{% url 'register' %}" class="btn-main">Зареєструватись</a>
                 {% endif %}
             </div>
         </div>
     </nav>
 
-    <header class="container py-5 mt-4">
-        <div class="row align-items-center">
-            <div class="col-lg-7 text-center text-lg-start">
-                <h1 class="display-3 fw-black mb-3">Привіт! Я <span style="color: #ff9a9e;">Еліо</span> 👋</h1>
-                <p class="lead fs-4 mb-5 opacity-75">Твій персональний помічник для ментального здоров'я. Допомагаємо справлятися зі стресом та знаходити баланс щодня.</p>
-                <a href="{% url 'register' %}" class="btn btn-main btn-lg px-5 shadow">Почати подорож</a>
+    <!-- ГЕРОЙ БЛОК -->
+    <header class="container py-5 mb-5" style="min-height: 75vh; display: flex; align-items: center;">
+        <div class="row align-items-center w-100 g-5">
+            <div class="col-lg-6 text-center text-lg-start reveal">
+                <h1 class="display-3 fw-black mb-3 lh-sm">
+                    Привіт! Я <span style="color: var(--accent-pink);">Еліо</span> <span class="emoji-sun">👋</span>
+                </h1>
+                <p class="fs-4 mb-5 opacity-75" style="line-height: 1.6;">
+                    Твій персональний помічник для ментального здоров'я. Допомагаємо справлятися зі стресом та знаходити баланс щодня.
+                </p>
+                <a href="{% url 'register' %}" class="btn-main fs-5 px-5 py-3 shadow">Почати подорож</a>
             </div>
-            <div class="col-lg-5 text-center">
-                <img src="{% static 'mascot.png' %}" class="mascot-hero" alt="Mascot">
-                <!-- у мене nano banana ліміт має, потім перегенерю -->
+
+            <div class="col-lg-6 reveal" style="transition-delay: 0.2s;">
+                <!-- 3D КОНТЕЙНЕР -->
+                <div class="model-3d-container" style="background: transparent; box-shadow: none;">
+                    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+
+                    <model-viewer
+                        src="{% static 'elio_model.glb' %}"
+                        alt="Еліо медитує"
+                        auto-rotate
+                        rotation-per-second="10deg"
+                        interaction-prompt="none"
+                        shadow-intensity="0"
+                        style="width: 100%; height: 100%; background-color: transparent;">
+                    </model-viewer>
+                </div>
             </div>
         </div>
     </header>
 
-    <section class="container py-5">
-        <h2 class="text-center fw-bold mb-5">Що всередині?</h2>
+    <!-- ЩО ВСЕРЕДИНІ -->
+    <section class="container py-5 mt-4">
+        <h2 class="text-center fw-black mb-5 reveal">Що всередині?</h2>
         <div class="row g-4">
-            <div class="col-md-3">
+            <div class="col-md-3 reveal">
                 <div class="feature-card">
                     <span class="feature-icon">📒</span>
                     <h5 class="fw-bold">Щоденник</h5>
-                    <p class="small mb-0">Відстежуй настрій та свої думки кожного дня.</p>
+                    <p class="small mb-0 opacity-75">Відстежуй настрій та свої думки кожного дня.</p>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 reveal" style="transition-delay: 0.1s;">
                 <div class="feature-card">
                     <span class="feature-icon">🧘</span>
                     <h5 class="fw-bold">Вправи</h5>
-                    <p class="small mb-0">Дихальні техніки для швидкого заспокоєння.</p>
+                    <p class="small mb-0 opacity-75">Дихальні техніки для швидкого заспокоєння.</p>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 reveal" style="transition-delay: 0.2s;">
                 <div class="feature-card">
                     <span class="feature-icon">📊</span>
                     <h5 class="fw-bold">Аналітика</h5>
-                    <p class="small mb-0">Переглядай тренди свого емоційного стану.</p>
+                    <p class="small mb-0 opacity-75">Переглядай тренди свого емоційного стану.</p>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-3 reveal" style="transition-delay: 0.3s;">
                 <div class="feature-card">
                     <span class="feature-icon">💬</span>
                     <h5 class="fw-bold">Підтримка</h5>
-                    <p class="small mb-0">Анонімне місце для твоїх переживань.</p>
+                    <p class="small mb-0 opacity-75">Зручний пошук та запис до перевірених психологів.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="container py-5">
-        <div class="feature-card p-5 text-start">
-            <div class="row align-items-center">
-                <div class="col-lg-8">
-                    <h2 class="fw-bold mb-4">Наша мета — твій спокій</h2>
-                    <p class="fs-5">Ми віримо, що психологічна підтримка має бути доступною, простою та безпечною для кожного. Elio створений, щоб ти ніколи не залишався наодинці зі своїми емоціями.</p>
+    <!-- ДЛЯ КОРИСТУВАЧІВ ТА ПСИХОЛОГІВ -->
+    <section class="container py-5 mt-5">
+        <div class="row g-4 align-items-stretch">
+            <div class="col-lg-6 reveal">
+                <div class="feature-card p-5 text-start d-flex flex-column justify-content-center">
+                    <span class="fs-1 mb-3">🌱</span>
+                    <h3 class="fw-bold mb-3">Шукаєш допомогу?</h3>
+                    <p class="fs-5 opacity-75">Ми віримо, що психологічна підтримка має бути доступною, простою та безпечною для кожного. Записуй свої думки, слідкуй за прогресом та знаходь свого спеціаліста.</p>
                 </div>
-                <div class="col-lg-4 text-center">
-                    <span style="font-size: 5rem;">✨</span>
+            </div>
+            <div class="col-lg-6 reveal" style="transition-delay: 0.2s;">
+                <div class="feature-card p-5 text-start d-flex flex-column justify-content-center" style="background-color: rgba(123, 97, 255, 0.05);">
+                    <span class="fs-1 mb-3">💼</span>
+                    <h3 class="fw-bold mb-3">Ти спеціаліст?</h3>
+                    <p class="fs-5 opacity-75">Долучайся до нашої платформи. Отримай зручний календар для керування записами, доступ до карток настрою клієнтів та працюй у безпечному середовищі.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <footer class="container py-5 text-center opacity-50">
-        <hr>
-        <p>© 2026 Команда Elio. Цифровий простір турботи.</p>
+    <!-- ПРЕМІУМ ПІДПИСКА -->
+    <section class="container py-5 mt-5 mb-5">
+        <div class="text-center mb-5 reveal">
+            <h2 class="fw-black mb-3">Обери свій формат підтримки</h2>
+            <p class="fs-5 opacity-75 mx-auto" style="max-width: 600px;">Базовий функціонал назавжди безкоштовний. Але для тих, хто хоче знати про себе більше, ми створили Premium.</p>
+        </div>
+
+        <div class="row justify-content-center g-4">
+            <!-- Basic -->
+            <div class="col-lg-5 reveal">
+                <div class="feature-card p-5 d-flex flex-column text-start">
+                    <h4 class="fw-bold mb-2">Базовий</h4>
+                    <h2 class="display-5 fw-black mb-4">0 <span class="fs-5 text-muted fw-normal">грн/міс</span></h2>
+                    <ul class="list-unstyled mb-5 fs-5 opacity-75 lh-lg flex-grow-1">
+                        <li><i class="bi bi-check-circle-fill text-success me-2"></i> Трекінг настрою</li>
+                        <li><i class="bi bi-check-circle-fill text-success me-2"></i> Базові дихальні вправи</li>
+                        <li><i class="bi bi-check-circle-fill text-success me-2"></i> Пошук психологів</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Premium -->
+            <div class="col-lg-5 reveal" style="transition-delay: 0.2s;">
+                <div class="feature-card premium-card p-5 d-flex flex-column text-start">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h4 class="fw-bold mb-0">Premium <i class="bi bi-star-fill text-warning fs-5"></i></h4>
+                        <span class="badge" style="background: var(--accent-pink); font-size: 0.9rem;">Хіт</span>
+                    </div>
+                    <h2 class="display-5 fw-black mb-4">149 <span class="fs-5 text-muted fw-normal">грн/міс</span></h2>
+                    <ul class="list-unstyled mb-5 fs-5 opacity-75 lh-lg flex-grow-1">
+                        <li><i class="bi bi-check-circle-fill" style="color: #7b61ff;"></i> Безлімітна аналітика</li>
+                        <li><i class="bi bi-check-circle-fill" style="color: #7b61ff;"></i> Глибокий аналіз тригерів</li>
+                        <li><i class="bi bi-check-circle-fill" style="color: #7b61ff;"></i> Ексклюзивні медитації</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="container py-5 text-center">
+        <hr class="opacity-10 mb-4">
+        <p class="mb-1 opacity-50">© 2026 Команда Elio. Цифровий простір турботи.</p>
     </footer>
+
+    <!-- СКРИПТИ -->
     <script>
-    (function() {
-        const savedTheme = localStorage.getItem('elio-theme') || 'light';
-        document.documentElement.setAttribute('data-bs-theme', savedTheme);
-    })();
-    </script>
-    <script>
+        // Анімація появи елементів при скролі
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        reveal(); // Запускаємо одразу
+
+        // Логіка перемикача тем
         const btn = document.getElementById('themeBtn');
         const icon = btn.querySelector('i');
         const html = document.documentElement;
+        const emojiSun = document.querySelector('.emoji-sun');
+
+        function updateIconAndEmoji(theme) {
+            icon.className = theme === 'light' ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
+            if(emojiSun) emojiSun.innerText = theme === 'light' ? '👋' : '💤';
+        }
 
         btn.onclick = () => {
             const theme = html.getAttribute('data-bs-theme');
             const newTheme = theme === 'light' ? 'dark' : 'light';
             html.setAttribute('data-bs-theme', newTheme);
-            icon.className = newTheme === 'light' ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
             localStorage.setItem('elio-theme', newTheme);
+            updateIconAndEmoji(newTheme);
         };
 
-        // Завантаження збереженої теми
-        const saved = localStorage.getItem('elio-theme');
-        if(saved) {
-            html.setAttribute('data-bs-theme', saved);
-            icon.className = saved === 'light' ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
-        }
+        const savedTheme = localStorage.getItem('elio-theme') || 'light';
+        html.setAttribute('data-bs-theme', savedTheme);
+        updateIconAndEmoji(savedTheme);
     </script>
 </body>
 </html>
