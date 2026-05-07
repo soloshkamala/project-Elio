@@ -73,32 +73,8 @@
 
         .error-text { color: #dc3545; font-size: 0.8rem; margin-top: 4px; font-weight: bold; }
 
-        /* Стилі для блоку психолога */
+        /* Стилі для блоку психолога (залишив тільки рамку для перемикача) */
         .psy-switch-box { background: rgba(123, 97, 255, 0.05); border: 1px solid rgba(123, 97, 255, 0.2); border-radius: 15px; }
-        .psy-fields-box { background: rgba(123, 97, 255, 0.03); border: 1px dashed rgba(123, 97, 255, 0.3); border-radius: 15px; animation: fadeIn 0.4s ease-out; }
-
-        /* КАСТОМНИЙ ФАЙЛ ІНПУТ */
-        .custom-file-upload {
-            border: 2px dashed #7b61ff;
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.3s;
-            background: rgba(123, 97, 255, 0.02);
-            display: block;
-        }
-        .custom-file-upload:hover { background: rgba(123, 97, 255, 0.08); }
-        input[type="file"] { display: none; } /* Ховаємо страшний дефолт */
-
-        /* Кастомна іконка дати */
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            cursor: pointer;
-            opacity: 0.6;
-            transition: 0.2s;
-        }
-        input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
-        [data-bs-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); }
     </style>
 </head>
 <body>
@@ -116,10 +92,8 @@
 
                     <form method="post" id="registerForm" enctype="multipart/form-data">
                         {% csrf_token %}
-                        <!-- ПЕРЕЗІБРАНА СІТКА БЕЗ ДІРОК -->
                         <div class="row g-3">
 
-                            <!-- Ряд 1: Логін і Пошта -->
                             <div class="col-md-6">
                                 <label class="form-label text-muted small fw-bold opacity-75">Логін</label>
                                 {{ form.username }}
@@ -131,31 +105,12 @@
                                 {% if form.email.errors %}<div class="error-text">{{ form.email.errors.0 }}</div>{% endif %}
                             </div>
 
-                            <!-- Ряд 2: Ім'я і Телефон -->
-                            <div class="col-md-6">
+                            <div class="col-12">
                                 <label class="form-label text-muted small fw-bold opacity-75">Ім'я</label>
                                 {{ form.first_name }}
                                 {% if form.first_name.errors %}<div class="error-text">{{ form.first_name.errors.0 }}</div>{% endif %}
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold opacity-75">Телефон</label>
-                                {{ form.phone_number }}
-                                {% if form.phone_number.errors %}<div class="error-text">{{ form.phone_number.errors.0 }}</div>{% endif %}
-                            </div>
 
-                            <!-- Ряд 3: Дата нар. і Стать -->
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold opacity-75">Дата народження</label>
-                                {{ form.birth_date }}
-                                {% if form.birth_date.errors %}<div class="error-text">{{ form.birth_date.errors.0 }}</div>{% endif %}
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label text-muted small fw-bold opacity-75">Стать</label>
-                                {{ form.gender }}
-                                {% if form.gender.errors %}<div class="error-text">{{ form.gender.errors.0 }}</div>{% endif %}
-                            </div>
-
-                            <!-- Ряд 4: Паролі -->
                             <div class="col-md-6 position-relative">
                                 <label class="form-label text-muted small fw-bold opacity-75">Пароль</label>
                                 {{ form.password1 }}
@@ -169,7 +124,6 @@
                                 {% if form.password2.errors %}<div class="error-text">{{ form.password2.errors.0 }}</div>{% endif %}
                             </div>
 
-                            <!-- БЛОК ПСИХОЛОГА -->
                             <div class="col-12 mt-4">
                                 <div class="form-check form-switch psy-switch-box p-3 d-flex align-items-center">
                                     <input class="form-check-input ms-0 me-3" type="checkbox" role="switch" name="is_psychologist" id="psy_checkbox" style="width: 3em; height: 1.5em; cursor: pointer;">
@@ -177,36 +131,7 @@
                                         Я спеціаліст (Психолог)
                                     </label>
                                 </div>
-                            </div>
-
-                            <!-- Приховані поля для психолога -->
-                            <div class="col-12 mt-2" id="psy_fields" style="display: none;">
-                                <div class="psy-fields-box p-4">
-                                    <h6 class="fw-bold mb-3" style="color: #7b61ff;">Додаткові дані для спеціалістів</h6>
-
-                                    <div class="mb-4">
-                                        <label class="form-label text-muted small fw-bold opacity-75">Про себе (Досвід, підходи) — макс. 1000 симв.</label>
-                                        <!-- Додано maxlength="1000" -->
-                                        <textarea name="bio" id="id_bio" class="form-control" rows="3" maxlength="1000" placeholder="Розкажіть про свій професійний досвід..."></textarea>
-                                        {% if form.bio.errors %}<div class="error-text">{{ form.bio.errors.0 }}</div>{% endif %}
-                                    </div>
-
-                                    <div class="mb-2">
-                                        <label class="form-label text-muted small fw-bold opacity-75">Документ про освіту</label>
-
-                                        <!-- КРАСИВИЙ ЗАВАНТАЖУВАЧ -->
-                                        <label for="id_diploma_file" class="custom-file-upload">
-                                            <i class="bi bi-cloud-arrow-up fs-2" style="color: #7b61ff;"></i><br>
-                                            <span id="file-name" class="fw-bold mt-2 d-block" style="color: #555;">Натисніть, щоб обрати файл</span>
-                                            <span class="small text-muted">PDF, JPG або PNG (макс. 5 МБ)</span>
-                                        </label>
-                                        <!-- Прихований реальний інпут -->
-                                        <input type="file" name="diploma_file" id="id_diploma_file" accept=".pdf, .jpg, .jpeg, .png">
-
-                                        <div id="file-error" class="error-text mt-2" style="display: none;"></div>
-                                        {% if form.diploma_file.errors %}<div class="error-text">{{ form.diploma_file.errors.0 }}</div>{% endif %}
-                                    </div>
-                                </div>
+                                <p class="small text-muted mt-2 text-start px-2">Ви зможете завантажити диплом та розказати про себе у профілі після реєстрації.</p>
                             </div>
 
                         </div>
@@ -255,57 +180,6 @@
         }
         setupPasswordToggle('togglePassword1', 'password1');
         setupPasswordToggle('togglePassword2', 'password2');
-
-        // --- Телефон ---
-        const phoneInput = document.getElementById('id_phone_number');
-        if (phoneInput) {
-            phoneInput.addEventListener('input', function() {
-                if (!this.value.startsWith('+380')) this.value = '+380';
-                this.value = '+' + this.value.substring(1).replace(/\D/g, '').substring(0, 12);
-            });
-        }
-
-        // --- Логіка Психолога та Валідація Файлу ---
-        const psyCheckbox = document.getElementById('psy_checkbox');
-        const psyFields = document.getElementById('psy_fields');
-        const bioInput = document.getElementById('id_bio');
-        const diplomaInput = document.getElementById('id_diploma_file');
-        const fileNameDisplay = document.getElementById('file-name');
-        const fileError = document.getElementById('file-error');
-
-        if (psyCheckbox && psyFields) {
-            psyCheckbox.addEventListener('change', function() {
-                if (this.checked) {
-                    psyFields.style.display = 'block';
-                } else {
-                    psyFields.style.display = 'none';
-                    if(bioInput) bioInput.value = '';
-                    if(diplomaInput) diplomaInput.value = '';
-                    fileNameDisplay.textContent = 'Натисніть, щоб обрати файл';
-                    fileError.style.display = 'none';
-                }
-            });
-            if (psyCheckbox.checked) psyFields.style.display = 'block';
-        }
-
-        // Відображення назви файлу та перевірка розміру (макс 5MB)
-        if (diplomaInput) {
-            diplomaInput.addEventListener('change', function() {
-                fileError.style.display = 'none';
-                if (this.files && this.files[0]) {
-                    const file = this.files[0];
-                    if (file.size > 5 * 1024 * 1024) {
-                        fileError.textContent = 'Помилка: Файл перевищує 5 МБ!';
-                        fileError.style.display = 'block';
-                        this.value = ''; // Очищаємо інпут
-                        fileNameDisplay.textContent = 'Натисніть, щоб обрати файл';
-                    } else {
-                        fileNameDisplay.textContent = file.name;
-                        fileNameDisplay.style.color = '#7b61ff';
-                    }
-                }
-            });
-        }
     </script>
 </body>
 </html>

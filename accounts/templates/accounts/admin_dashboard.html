@@ -9,18 +9,17 @@
             document.documentElement.setAttribute('data-bs-theme', saved);
         })();
     </script>
-    <title>Панель Адміністратора — Elio</title>
+    <title>Elio Control Center</title>
 
-    <!-- Додали Bootstrap JS для попапів та вкладок -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
     <style>
-        :root { --accent: #7b61ff; --bg: #f8f9fa; --card-bg: rgba(255, 255, 255, 0.9); }
-        [data-bs-theme="dark"] { --bg: #12121c; --card-bg: rgba(30, 30, 46, 0.9); }
+        :root { --accent: #7b61ff; --bg: #f8f9fa; --card-bg: rgba(255, 255, 255, 0.9); --hover-bg: rgba(123, 97, 255, 0.05); }
+        [data-bs-theme="dark"] { --bg: #12121c; --card-bg: rgba(30, 30, 46, 0.9); --hover-bg: rgba(123, 97, 255, 0.15); }
 
-        body { background-color: var(--bg); font-family: 'Nunito', sans-serif; padding-top: 20px; padding-bottom: 50px; }
+        body { background-color: var(--bg); font-family: 'Nunito', sans-serif; padding-top: 20px; padding-bottom: 50px; transition: 0.3s; }
 
         .glass-card {
             background: var(--card-bg); backdrop-filter: blur(10px);
@@ -28,37 +27,49 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.05); padding: 25px; margin-bottom: 20px;
         }
 
-        .btn-custom { border-radius: 50px; padding: 10px 20px; font-weight: bold; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+        .stat-card { text-align: center; padding: 20px; border-radius: 15px; background: var(--hover-bg); border: 1px dashed rgba(123, 97, 255, 0.3); transition: 0.3s; }
+        .stat-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+        .stat-value { font-size: 2rem; font-weight: 900; color: var(--accent); line-height: 1; margin-bottom: 5px; }
+
+        .btn-custom { border-radius: 50px; padding: 10px 20px; font-weight: bold; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
+        .btn-custom:hover { transform: scale(1.05); }
+
         .theme-toggle { background: white; color: #333; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         [data-bs-theme="dark"] .theme-toggle { background: #2b2b3d; color: white; }
-        .logout-btn { background: #dc3545; color: white; }
+        .logout-btn { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
+        .logout-btn:hover { background: #dc3545; color: white; }
         .bell-btn { background: rgba(123, 97, 255, 0.1); color: #7b61ff; position: relative; }
 
-        .table { --bs-table-bg: transparent; color: inherit; }
-        .table th { border-bottom: 2px solid rgba(123, 97, 255, 0.2); }
+        .search-bar { border-radius: 50px; padding: 12px 25px; border: 2px solid rgba(123, 97, 255, 0.2); background: var(--card-bg); color: inherit; width: 100%; max-width: 400px; outline: none; transition: 0.3s; }
+        .search-bar:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(123, 97, 255, 0.2); }
+
+        .table { --bs-table-bg: transparent; color: inherit; margin-bottom: 0; }
+        .table th { border-bottom: 2px solid rgba(123, 97, 255, 0.2); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; color: #888; }
         .table td { border-bottom: 1px solid rgba(123, 97, 255, 0.1); vertical-align: middle; }
+        .table-hover tbody tr:hover { background-color: var(--hover-bg); }
 
-        /* Стиль для біографії, щоб не ламало верстку */
         .bio-text { word-wrap: break-word; word-break: break-word; white-space: pre-wrap; font-size: 0.9rem; }
-
-        .nav-tabs .nav-link { color: inherit; font-weight: bold; border-radius: 10px 10px 0 0; }
-        .nav-tabs .nav-link.active { background-color: var(--card-bg); border-color: rgba(123, 97, 255, 0.2) rgba(123, 97, 255, 0.2) transparent; color: var(--accent); }
+        .nav-tabs { border-bottom: 2px solid rgba(123, 97, 255, 0.2); gap: 10px; }
+        .nav-tabs .nav-link { color: #888; font-weight: bold; border-radius: 15px 15px 0 0; padding: 12px 25px; border: none; transition: 0.3s; }
+        .nav-tabs .nav-link:hover { color: var(--accent); background: rgba(123, 97, 255, 0.05); }
+        .nav-tabs .nav-link.active { background-color: var(--accent); color: white; box-shadow: 0 -5px 15px rgba(123, 97, 255, 0.3); }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- Навігація -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
             <h2 class="fw-black m-0" style="color: var(--accent);">
-                <i class="bi bi-rocket-takeoff-fill me-2"></i>Elio Control
+                <i class="bi bi-grid-1x2-fill me-2"></i>Elio Control
             </h2>
+
+            <input type="text" id="liveSearch" class="search-bar" placeholder="🔍 Пошук юзера (ім'я, пошта)...">
+
             <div class="d-flex gap-3">
-                <!-- Кнопка Попапу Заявок -->
-                <button class="btn-custom bell-btn" data-bs-toggle="modal" data-bs-target="#applicationsModal">
+                <button class="btn-custom bell-btn shadow-sm" data-bs-toggle="modal" data-bs-target="#applicationsModal">
                     <i class="bi bi-bell-fill"></i> Заявки
                     {% if pending_psychologists %}
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger border border-light">
                             {{ pending_psychologists|length }}
                         </span>
                     {% endif %}
@@ -66,76 +77,101 @@
                 <button id="themeBtn" class="btn-custom theme-toggle"><i class="bi bi-moon-fill"></i></button>
                 <form action="{% url 'logout' %}" method="post" class="m-0">
                     {% csrf_token %}
-                    <button type="submit" class="btn-custom logout-btn"><i class="bi bi-box-arrow-right"></i> Вийти</button>
+                    <button type="submit" class="btn-custom logout-btn"><i class="bi bi-box-arrow-right"></i></button>
                 </form>
             </div>
         </div>
 
         {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} border-0 shadow-sm" style="border-radius: 15px;">{{ message }}</div>
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} border-0 shadow-sm d-flex align-items-center gap-2" style="border-radius: 15px;">
+                    <i class="bi bi-info-circle-fill"></i> {{ message }}
+                </div>
             {% endfor %}
         {% endif %}
 
-        <!-- ВКЛАДКИ З КОРИСТУВАЧАМИ -->
-        <ul class="nav nav-tabs mb-3" id="userTabs" role="tablist">
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-value">{{ clients|length }}</div>
+                    <div class="text-muted fw-bold small text-uppercase">Всього клієнтів</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-value">{{ psychologists|length }}</div>
+                    <div class="text-muted fw-bold small text-uppercase">Активних психологів</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card" style="{% if pending_psychologists %}border-color: #ff9a9e; background: rgba(255, 154, 158, 0.1);{% endif %}">
+                    <div class="stat-value" style="{% if pending_psychologists %}color: #dc3545;{% endif %}">{{ pending_psychologists|length }}</div>
+                    <div class="text-muted fw-bold small text-uppercase">Заявок на розгляд</div>
+                </div>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs" id="userTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#clients" type="button"><i class="bi bi-emoji-smile"></i> Клієнти</button>
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#clients" type="button"><i class="bi bi-people-fill me-1"></i> Клієнти</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#psychologists" type="button"><i class="bi bi-heart-pulse"></i> Психологи</button>
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#psychologists" type="button"><i class="bi bi-heart-pulse-fill me-1"></i> Психологи</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#admins" type="button"><i class="bi bi-shield-lock"></i> Адміни</button>
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#admins" type="button"><i class="bi bi-shield-lock-fill me-1"></i> Адміни</button>
             </li>
         </ul>
 
-        <div class="glass-card tab-content" id="userTabsContent">
+        <div class="glass-card tab-content" id="userTabsContent" style="border-top-left-radius: 0;">
 
-            <!-- ВКЛАДКА: КЛІЄНТИ -->
             <div class="tab-pane fade show active overflow-auto" id="clients" role="tabpanel">
-                <table class="table mb-0">
-                    <thead><tr><th>Користувач</th><th>Контакти</th><th>Статус</th><th>Реєстрація</th><th>Дії</th></tr></thead>
+                <table class="table table-hover align-middle searchable-table">
+                    <thead><tr><th>Користувач</th><th>Контакти</th><th>Статус</th><th>Реєстрація</th><th class="text-end">Дії</th></tr></thead>
                     <tbody>
                         {% for u in clients %}
                         <tr>
                             <td>
-                                <div class="fw-bold">{{ u.username }} {% if u.is_premium %}<i class="bi bi-star-fill text-warning" title="Premium"></i>{% endif %}</div>
-                                <small class="text-muted">{{ u.first_name }}</small>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--hover-bg); display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--accent);">
+                                        {{ u.username|make_list|first|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ u.username }} {% if u.is_premium %}<i class="bi bi-star-fill text-warning ms-1" title="Premium"></i>{% endif %}</div>
+                                        <small class="text-muted">{{ u.first_name|default:"-" }}</small>
+                                    </div>
+                                </div>
                             </td>
-                            <td><div>{{ u.email }}</div><small class="text-muted">{{ u.phone_number|default:"-" }}</small></td>
+                            <td>
+                                <div><a href="mailto:{{ u.email }}" class="text-decoration-none text-info"><i class="bi bi-envelope-at me-1"></i>{{ u.email }}</a></div>
+                                <small class="text-muted"><i class="bi bi-telephone me-1"></i>{{ u.phone_number|default:"Не вказано" }}</small>
+                            </td>
                             <td>
                                 {% if u.banned_until and u.banned_until > now %}
-                                    <span class="badge bg-danger">Бан до {{ u.banned_until|date:"d.m H:i" }}</span>
+                                    <span class="badge bg-danger rounded-pill"><i class="bi bi-lock-fill"></i> Бан до {{ u.banned_until|date:"d.m H:i" }}</span>
                                 {% elif not u.is_active %}
-                                    <span class="badge bg-secondary">Не підтв. пошту</span>
+                                    <span class="badge bg-secondary rounded-pill">Не підтв. пошту</span>
                                 {% else %}
-                                    <span class="badge bg-success">Активний</span>
+                                    <span class="badge bg-success rounded-pill"><i class="bi bi-check-circle-fill"></i> Активний</span>
                                 {% endif %}
                             </td>
-                            <td class="small">{{ u.date_joined|date:"d.m.Y H:i" }}</td>
-                            <td>
-                                <!-- Випадаюче меню дій -->
+                            <td class="small text-muted">{{ u.date_joined|date:"d.m.Y" }}</td>
+                            <td class="text-end">
                                 <div class="dropdown">
-                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">Дії</button>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow">
-                                        <!-- Редагування веде у стандартну джанго форму -->
-                                        <li><a class="dropdown-item" href="/admin/accounts/customuser/{{ u.id }}/change/" target="_blank"><i class="bi bi-pencil"></i> Редагувати дані</a></li>
-                                        <li><hr class="dropdown-divider"></li>
-
-                                        <!-- Форма для POST запитів (швидкі дії) -->
-                                        <form action="{% url 'admin_user_action' u.id %}" method="post">
+                                    <button class="btn btn-sm btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown" style="border-radius: 10px;">Дії</button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="border-radius: 15px; overflow: hidden;">
+                                        <li><a class="dropdown-item py-2" href="/admin/accounts/customuser/{{ u.id }}/change/" target="_blank"><i class="bi bi-sliders text-secondary me-2"></i> Деталі профілю</a></li>
+                                        <li><hr class="dropdown-divider m-0"></li>
+                                        <form action="{% url 'admin_user_action' u.id %}" method="post" class="m-0">
                                             {% csrf_token %}
-                                            <li><button type="submit" name="action" value="toggle_premium" class="dropdown-item text-warning fw-bold"><i class="bi bi-star"></i> Вкл/Викл Преміум</button></li>
-
+                                            <li><button type="submit" name="action" value="toggle_premium" class="dropdown-item py-2 text-warning fw-bold"><i class="bi bi-star-fill me-2"></i> Вкл/Викл Преміум</button></li>
                                             {% if u.banned_until and u.banned_until > now %}
-                                                <li><button type="submit" name="action" value="unban" class="dropdown-item text-success"><i class="bi bi-unlock"></i> Розбанити</button></li>
+                                                <li><button type="submit" name="action" value="unban" class="dropdown-item py-2 text-success"><i class="bi bi-unlock-fill me-2"></i> Розбанити</button></li>
                                             {% else %}
-                                                <li><button type="submit" name="action" value="ban_1_week" class="dropdown-item text-danger"><i class="bi bi-lock"></i> Бан на 7 днів</button></li>
+                                                <li><button type="submit" name="action" value="ban_1_week" class="dropdown-item py-2 text-danger"><i class="bi bi-slash-circle me-2"></i> Бан на 7 днів</button></li>
                                             {% endif %}
-
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li><button type="submit" name="action" value="delete" class="dropdown-item text-danger fw-bold" onclick="return confirm('Точно видалити?');"><i class="bi bi-trash"></i> Видалити акаунт</button></li>
+                                            <li><hr class="dropdown-divider m-0"></li>
+                                            <li><button type="submit" name="action" value="delete" class="dropdown-item py-2 text-danger fw-bold" onclick="return confirm('Точно видалити клієнта?');"><i class="bi bi-trash3-fill me-2"></i> Знищити акаунт</button></li>
                                         </form>
                                     </ul>
                                 </div>
@@ -146,37 +182,49 @@
                 </table>
             </div>
 
-            <!-- ВКЛАДКА: ПСИХОЛОГИ -->
             <div class="tab-pane fade overflow-auto" id="psychologists" role="tabpanel">
-                <table class="table mb-0">
-                    <thead><tr><th>Спеціаліст</th><th>Контакти</th><th>Статус</th><th>Реєстрація</th><th>Дії</th></tr></thead>
+                <table class="table table-hover align-middle searchable-table">
+                    <thead><tr><th>Спеціаліст</th><th>Контакти</th><th>Статус</th><th>Реєстрація</th><th class="text-end">Дії</th></tr></thead>
                     <tbody>
                         {% for u in psychologists %}
                         <tr>
-                            <td><div class="fw-bold">{{ u.username }}</div><small class="text-muted">{{ u.first_name }}</small></td>
-                            <td><div>{{ u.email }}</div><small class="text-muted">{{ u.phone_number|default:"-" }}</small></td>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(123, 97, 255, 0.1); display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--accent);">
+                                        <i class="bi bi-person-badge"></i>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ u.username }}</div>
+                                        <small class="text-muted">{{ u.first_name|default:"-" }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div><a href="mailto:{{ u.email }}" class="text-decoration-none text-info"><i class="bi bi-envelope-at me-1"></i>{{ u.email }}</a></div>
+                                <small class="text-muted"><i class="bi bi-telephone me-1"></i>{{ u.phone_number|default:"Не вказано" }}</small>
+                            </td>
                             <td>
                                 {% if u.banned_until and u.banned_until > now %}
-                                    <span class="badge bg-danger">Бан до {{ u.banned_until|date:"d.m H:i" }}</span>
+                                    <span class="badge bg-danger rounded-pill">У відстороненні</span>
                                 {% else %}
-                                    <span class="badge bg-primary">Працює</span>
+                                    <span class="badge bg-primary rounded-pill"><i class="bi bi-check-circle"></i> Підтверджено</span>
                                 {% endif %}
                             </td>
-                            <td class="small">{{ u.date_joined|date:"d.m.Y H:i" }}</td>
-                            <td>
+                            <td class="small text-muted">{{ u.date_joined|date:"d.m.Y" }}</td>
+                            <td class="text-end">
                                 <div class="dropdown">
-                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">Дії</button>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow">
-                                        <li><a class="dropdown-item" href="/admin/accounts/customuser/{{ u.id }}/change/" target="_blank"><i class="bi bi-pencil"></i> Редагувати дані</a></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <form action="{% url 'admin_user_action' u.id %}" method="post">
+                                    <button class="btn btn-sm btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown" style="border-radius: 10px;">Дії</button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="border-radius: 15px; overflow: hidden;">
+                                        <li><a class="dropdown-item py-2" href="/admin/accounts/customuser/{{ u.id }}/change/" target="_blank"><i class="bi bi-card-text text-secondary me-2"></i> Анкета та диплом</a></li>
+                                        <li><hr class="dropdown-divider m-0"></li>
+                                        <form action="{% url 'admin_user_action' u.id %}" method="post" class="m-0">
                                             {% csrf_token %}
                                             {% if u.banned_until and u.banned_until > now %}
-                                                <li><button type="submit" name="action" value="unban" class="dropdown-item text-success"><i class="bi bi-unlock"></i> Розбанити</button></li>
+                                                <li><button type="submit" name="action" value="unban" class="dropdown-item py-2 text-success"><i class="bi bi-unlock-fill me-2"></i> Відновити доступ</button></li>
                                             {% else %}
-                                                <li><button type="submit" name="action" value="ban_1_week" class="dropdown-item text-danger"><i class="bi bi-lock"></i> Бан на 7 днів</button></li>
+                                                <li><button type="submit" name="action" value="ban_1_week" class="dropdown-item py-2 text-danger"><i class="bi bi-slash-circle me-2"></i> Відсторонити на тиждень</button></li>
                                             {% endif %}
-                                            <li><button type="submit" name="action" value="delete" class="dropdown-item text-danger fw-bold" onclick="return confirm('Точно видалити?');"><i class="bi bi-trash"></i> Звільнити/Видалити</button></li>
+                                            <li><button type="submit" name="action" value="delete" class="dropdown-item py-2 text-danger fw-bold" onclick="return confirm('Видалити спеціаліста з бази?');"><i class="bi bi-trash3-fill me-2"></i> Звільнити/Видалити</button></li>
                                         </form>
                                     </ul>
                                 </div>
@@ -187,16 +235,17 @@
                 </table>
             </div>
 
-            <!-- ВКЛАДКА: АДМІНИ -->
             <div class="tab-pane fade overflow-auto" id="admins" role="tabpanel">
-                <table class="table mb-0">
+                <table class="table table-hover align-middle searchable-table">
                     <thead><tr><th>Адмін</th><th>Пошта</th><th>Реєстрація</th></tr></thead>
                     <tbody>
                         {% for u in admins %}
                         <tr>
-                            <td><div class="fw-bold">{{ u.username }}</div></td>
-                            <td>{{ u.email }}</td>
-                            <td class="small">{{ u.date_joined|date:"d.m.Y H:i" }}</td>
+                            <td>
+                                <div class="fw-bold text-danger"><i class="bi bi-shield-check me-2"></i>{{ u.username }}</div>
+                            </td>
+                            <td><a href="mailto:{{ u.email }}" class="text-decoration-none text-muted">{{ u.email }}</a></td>
+                            <td class="small text-muted">{{ u.date_joined|date:"d.m.Y" }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -205,42 +254,53 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНЕ ВІКНО: ЗАЯВКИ ПСИХОЛОГІВ -->
     <div class="modal fade" id="applicationsModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content" style="background: var(--card-bg); backdrop-filter: blur(15px); border-radius: 20px;">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title fw-bold" style="color: var(--accent);">Нові заявки спеціалістів</h5>
+                <div class="modal-header border-0 pb-0">
+                    <h4 class="modal-title fw-black" style="color: var(--accent);">Нові заявки на верифікацію</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body pt-2">
                     {% if not pending_psychologists %}
-                        <div class="text-center text-muted py-4"><i class="bi bi-check-circle fs-1 d-block mb-2"></i> Усі заявки оброблено!</div>
+                        <div class="text-center text-muted py-5">
+                            <i class="bi bi-inbox fs-1 d-block mb-3 opacity-50"></i>
+                            <h5>Чисто! Немає нових заявок.</h5>
+                        </div>
                     {% endif %}
 
                     {% for p in pending_psychologists %}
-                    <div class="card mb-3 border-0 shadow-sm" style="background: rgba(123, 97, 255, 0.03); border-radius: 15px;">
-                        <div class="card-body">
-                            <h5 class="fw-bold">{{ p.first_name|default:p.username }}</h5>
-                            <p class="small text-muted mb-2"><i class="bi bi-envelope"></i> {{ p.email }} | <i class="bi bi-telephone"></i> {{ p.phone_number|default:"-" }}</p>
-
-                            <div class="p-3 mb-3 bg-white rounded bio-text border" data-bs-theme="light">
-                                <strong>Досвід та підходи:</strong><br>{{ p.bio|default:"Не вказано" }}
+                    <div class="card mb-4 border-0 shadow-sm overflow-hidden" style="border-radius: 20px; background: var(--bg);">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="fw-bold mb-1">{{ p.first_name|default:p.username }}</h5>
+                                    <div class="small text-muted">
+                                        <span class="me-3"><i class="bi bi-envelope-at me-1"></i>{{ p.email }}</span>
+                                        <span><i class="bi bi-telephone me-1"></i>{{ p.phone_number|default:"Не вказано" }}</span>
+                                    </div>
+                                </div>
+                                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill"><i class="bi bi-hourglass-split"></i> Чекає</span>
                             </div>
 
-                            <div class="d-flex gap-2">
+                            <div class="p-3 mb-4 rounded bio-text" style="background: var(--card-bg); border: 1px dashed rgba(123, 97, 255, 0.3);">
+                                <small class="text-muted text-uppercase fw-bold d-block mb-2">Супровідний текст (Біографія):</small>
+                                {{ p.bio|default:"Користувач не залишив опису." }}
+                            </div>
+
+                            <div class="d-flex gap-3">
                                 {% if p.diploma_file %}
-                                    <a href="{{ p.diploma_file.url }}" target="_blank" class="btn btn-outline-primary w-50" style="border-radius: 10px;">
-                                        <i class="bi bi-file-earmark-pdf"></i> Відкрити диплом
+                                    <a href="{{ p.diploma_file.url }}" target="_blank" class="btn btn-outline-primary flex-grow-1" style="border-radius: 15px; font-weight: bold;">
+                                        <i class="bi bi-file-earmark-pdf-fill me-2"></i> Відкрити документ
                                     </a>
                                 {% else %}
-                                    <button class="btn btn-outline-secondary w-50" disabled style="border-radius: 10px;">Файлу немає</button>
+                                    <button class="btn btn-outline-secondary flex-grow-1" disabled style="border-radius: 15px;">Файлу немає</button>
                                 {% endif %}
 
-                                <form action="{% url 'approve_psychologist' p.id %}" method="post" class="w-50">
+                                <form action="{% url 'approve_psychologist' p.id %}" method="post" class="flex-grow-1 m-0">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-success w-100" style="border-radius: 10px;">
-                                        <i class="bi bi-check-lg"></i> Схвалити заявку
+                                    <button type="submit" class="btn btn-success w-100 h-100" style="border-radius: 15px; font-weight: bold;">
+                                        <i class="bi bi-check-circle-fill me-2"></i> Схвалити
                                     </button>
                                 </form>
                             </div>
@@ -253,6 +313,7 @@
     </div>
 
     <script>
+        // --- Тема ---
         const btn = document.getElementById('themeBtn');
         const icon = btn.querySelector('i');
         const html = document.documentElement;
@@ -266,6 +327,33 @@
             updateIcon(target);
         };
         updateIcon(localStorage.getItem('elio-theme') || 'light');
+
+        // --- Живий пошук по таблицях ---
+        document.getElementById('liveSearch').addEventListener('keyup', function() {
+            let filter = this.value.toLowerCase();
+            // Шукаємо рядки тільки в активній вкладці
+            let activeTab = document.querySelector('.tab-pane.active');
+            if (!activeTab) return;
+
+            let rows = activeTab.querySelectorAll('tbody tr');
+
+            rows.forEach(row => {
+                let text = row.textContent.toLowerCase();
+                if (text.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        // Очищаємо пошук при перемиканні вкладок
+        document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function () {
+                document.getElementById('liveSearch').value = '';
+                document.querySelectorAll('.searchable-table tbody tr').forEach(row => row.style.display = '');
+            });
+        });
     </script>
 </body>
 </html>

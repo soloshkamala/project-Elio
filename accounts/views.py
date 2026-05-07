@@ -19,7 +19,7 @@ def home(request):
                 return redirect('psychologist_dashboard')
             return redirect('psychologist_pending')
         else:
-            return redirect('user_home')  # ПОВЕРНУЛИ СЮДИ user_home
+            return redirect('user_home')
 
     return render(request, 'accounts/home.html')
 
@@ -99,7 +99,7 @@ def verify_otp(request):
                 elif user.role == 'admin':
                     return redirect('admin_dashboard')
                 else:
-                    return redirect('user_home')  # ПОВЕРНУЛИ СЮДИ user_home
+                    return redirect('user_home')
 
     return render(request, 'accounts/verify_otp.html', {'email': email})
 
@@ -107,10 +107,24 @@ def verify_otp(request):
 @login_required
 def psychologist_pending(request):
     if request.user.role == 'client':
-        return redirect('user_home')  # ПОВЕРНУЛИ СЮДИ user_home
+        return redirect('user_home')
 
     if request.user.role == 'psychologist' and request.user.is_psychologist_verified:
         return redirect('psychologist_dashboard')
+
+    # ОБРОБКА ФОРМИ: Зберігаємо диплом і біографію
+    if request.method == 'POST':
+        bio = request.POST.get('bio')
+        diploma = request.FILES.get('diploma_file')
+
+        if bio and diploma:
+            request.user.bio = bio
+            request.user.diploma_file = diploma
+            request.user.save()
+            messages.success(request, "Документи успішно завантажено! Очікуйте на перевірку.")
+            return redirect('psychologist_pending')
+        else:
+            messages.error(request, "Будь ласка, заповніть біографію та додайте файл.")
 
     return render(request, 'accounts/psychologist_pending.html')
 
@@ -118,20 +132,28 @@ def psychologist_pending(request):
 @login_required
 def psychologist_dashboard(request):
     if request.user.role != 'psychologist':
-        return redirect('user_home')  # ПОВЕРНУЛИ СЮДИ user_home
-
+        return redirect('user_home')
     if not request.user.is_psychologist_verified:
         return redirect('psychologist_pending')
 
-    return render(request, 'accounts/psychologist_dashboard_placeholder.html')
+    # В майбутньому тут буде запит до бази: наприклад, кількість його клієнтів
+    context = {
+        'user': request.user,
+        'today': timezone.now(),
+    }
+    return render(request, 'accounts/psychologist_dashboard.html', context)
 
 
 @login_required
 def admin_dashboard(request):
     if request.user.role != 'admin':
-        return redirect('user_home')  # ПОВЕРНУЛИ СЮДИ user_home
+        return redirect('user_home')
 
-    pending_psychologists = CustomUser.objects.filter(role='psychologist', is_psychologist_verified=False)
+    # АДМІНКА: Показуємо тільки тих, хто реально завантажив диплом
+    pending_psychologists = CustomUser.objects.filter(
+        role='psychologist',
+        is_psychologist_verified=False
+    ).exclude(diploma_file='')
 
     clients = CustomUser.objects.filter(role='client').order_by('-date_joined')
     psychologists = CustomUser.objects.filter(role='psychologist', is_psychologist_verified=True).order_by(
@@ -153,7 +175,7 @@ def admin_dashboard(request):
 @login_required
 def admin_user_action(request, user_id):
     if request.user.role != 'admin' or request.method != 'POST':
-        return redirect('user_home')  # ПОВЕРНУЛИ СЮДИ user_home
+        return redirect('user_home')
 
     target_user = get_object_or_404(CustomUser, id=user_id)
     action = request.POST.get('action')

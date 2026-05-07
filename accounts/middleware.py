@@ -9,7 +9,7 @@ class LoginRequiredMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.path.startswith('/admin/'):
+        if request.path.startswith('/admin/') or request.path.startswith('/media/') or request.path.startswith('/static/'):
             return self.get_response(request)
 
         allowed_paths = [
@@ -23,7 +23,6 @@ class LoginRequiredMiddleware:
             return redirect('home')
 
         if request.user.is_authenticated:
-
             if getattr(request.user, 'is_banned', False):
                 if request.path != reverse('logout'):
                     local_date = timezone.localtime(request.user.banned_until)
@@ -45,7 +44,6 @@ class LoginRequiredMiddleware:
                 ]
                 if request.path not in allowed_pending_paths:
                     return redirect('psychologist_pending')
-
 
             if getattr(request.user, 'role', '') == 'admin':
                 if request.path.startswith('/profile/') or request.path == reverse('home'):

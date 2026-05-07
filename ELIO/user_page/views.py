@@ -3,7 +3,8 @@ from datetime import datetime, timedelta
 from django.db.models.functions import TruncDate
 from django.db.models import Avg
 from django.contrib.auth.decorators import login_required
-from .models import MoodEntry, UserProfile
+from .models import MoodEntry
+
 
 @login_required
 def show_user_page(request):
@@ -12,11 +13,14 @@ def show_user_page(request):
     now = datetime.now()
     current_date_str = f"{now.day} {months_ukr[now.month]}"
 
-    unique_days = MoodEntry.objects.annotate(date_only=TruncDate('date_time')).values('date_only').distinct().count()
+    # БЕРЕМО ДАНІ ТІЛЬКИ ПОТОЧНОГО ЮЗЕРА (Раніше брало всіх підряд)
+    user_entries = MoodEntry.objects.filter(user=request.user)
 
-    total_entries = MoodEntry.objects.count()
+    unique_days = user_entries.annotate(date_only=TruncDate('date_time')).values('date_only').distinct().count()
+
+    total_entries = user_entries.count()
     if total_entries > 0:
-        panic_free_count = MoodEntry.objects.filter(had_panic_attack=False).count()
+        panic_free_count = user_entries.filter(had_panic_attack=False).count()
         peace_percentage = int((panic_free_count / total_entries) * 100)
     else:
         peace_percentage = 0
@@ -26,7 +30,7 @@ def show_user_page(request):
 
     for i in range(6, -1, -1):
         day = today - timedelta(days=i)
-        day_avg = MoodEntry.objects.filter(date_time__date=day).aggregate(Avg('mood_level'))['mood_level__avg']
+        day_avg = user_entries.filter(date_time__date=day).aggregate(Avg('mood_level'))['mood_level__avg']
         if day_avg:
             chart_data.append(int(day_avg * 20))
         else:
@@ -40,53 +44,76 @@ def show_user_page(request):
     }
     return render(request, 'user_page/index.html', context)
 
+
 @login_required
 def add_mood_view(request):
     if request.method == "POST":
         mood_level = request.POST.get('mood_level')
         note = request.POST.get('note')
         panic = request.POST.get('had_panic_attack') == 'on'
+
+        # ПРИВ'ЯЗУЄМО НАСТРІЙ ДО ЮЗЕРА
         MoodEntry.objects.create(
+            user=request.user,
             mood_level=int(mood_level),
             note=note,
             had_panic_attack=panic
         )
     return redirect('user_home')
 
+
 @login_required
 def settings_view(request):
     return render(request, 'user_page/settings.html')
 
+
 @login_required
 def my_profile_view(request):
-    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    # ЗБЕРІГАЄМО ДАНІ ПРЯМО В CUSTOM USER
     if request.method == "POST":
-        profile.first_name = request.POST.get('first_name', '')
-        profile.last_name = request.POST.get('last_name', '')
-        profile.gender = request.POST.get('gender', '')
+        request.user.first_name = request.POST.get('first_name', '')
+        request.user.last_name = request.POST.get('last_name', '')
+        request.user.phone_number = request.POST.get('phone_number', '')
+        request.user.gender = request.POST.get('gender', 'O')
+        request.user.core_issues = request.POST.get('core_issues', '')
+
         birth_date = request.POST.get('birth_date')
         if birth_date:
-            profile.birth_date = birth_date
-        profile.save()
+            request.user.birth_date = birth_date
+
+        # Якщо юзер завантажив фотку
+        if 'avatar' in request.FILES:
+            request.user.avatar = request.FILES['avatar']
+
+        # Якщо психолог завантажив диплом через профіль
+        if 'diploma_file' in request.FILES:
+            request.user.diploma_file = request.FILES['diploma_file']
+
+        request.user.save()
         return redirect('my_profile')
-    return render(request, 'user_page/my_profile.html', {'profile': profile})
+
+    return render(request, 'user_page/my_profile.html')
+
 
 @login_required
 def charts_reports_view(request):
     return render(request, 'user_page/charts_reports.html')
 
+
 @login_required
 def reminders_view(request):
-    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    # НАЛАШТУВАННЯ ТЕЖ В CUSTOM USER
     if request.method == "POST":
-        profile.reminders_enabled = request.POST.get('reminders_enabled') == 'on'
-        profile.save()
+        request.user.reminders_enabled = request.POST.get('reminders_enabled') == 'on'
+        request.user.save()
         return redirect('reminders')
-    return render(request, 'user_page/reminders.html', {'profile': profile})
+    return render(request, 'user_page/reminders.html')
+
 
 @login_required
 def premium_view(request):
     return render(request, 'user_page/premium.html')
+
 
 @login_required
 def checkout_view(request):

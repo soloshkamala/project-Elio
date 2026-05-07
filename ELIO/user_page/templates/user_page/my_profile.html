@@ -1,72 +1,212 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="uk" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мій профіль — ELIO</title>
-    <link rel="stylesheet" href="{% static 'user_page/style.css' %}">
+    <title>Мій профіль — Elio</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('elio-theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
+
+    <style>
+        :root { --bg-elio: #fdf6f0; --accent-pink: #ff9a9e; --accent-peach: #fecfef; --text-dark: #2d3436; }
+        [data-bs-theme="dark"] { --bg-elio: #1e1e2e; --text-dark: #f5f5f5; }
+
+        body { font-family: 'Nunito', sans-serif; background-color: var(--bg-elio); color: var(--text-dark); transition: 0.3s ease; padding: 40px 0; padding-bottom: 100px; }
+        .profile-wrapper { max-width: 700px; margin: 0 auto; padding: 0 15px; position: relative; }
+
+        .mascot-decor { position: absolute; top: -60px; right: 20px; width: 120px; z-index: 1; animation: float 4s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; position: relative; z-index: 2; }
+        .back-btn { background: white; padding: 10px 20px; border-radius: 20px; color: var(--text-dark); text-decoration: none; font-weight: 700; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; border: none; }
+        [data-bs-theme="dark"] .back-btn { background: #2b2b3d; }
+        .back-btn:hover { transform: translateX(-5px); color: var(--accent-pink); }
+
+        .feature-card { background: white; border-radius: 25px; padding: 40px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: 0.3s; position: relative; z-index: 2; }
+        [data-bs-theme="dark"] .feature-card { background: #2b2b3d; }
+
+        .user-header { text-align: center; margin-bottom: 40px; position: relative; }
+        .avatar-circle { width: 130px; height: 130px; border-radius: 50%; background: var(--bg-elio); margin: 0 auto 15px; border: 4px solid white; box-shadow: 0 10px 25px rgba(255, 154, 158, 0.3); overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; color: #ccc; position: relative; }
+        [data-bs-theme="dark"] .avatar-circle { border-color: #2b2b3d; }
+        .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
+
+        .avatar-edit-badge { position: absolute; bottom: 0; left: 50%; transform: translateX(25px); background: var(--text-dark); color: var(--bg-elio); width: 36px; height: 36px; border-radius: 50%; display: none; align-items: center; justify-content: center; cursor: pointer; border: 3px solid white; box-shadow: 0 5px 10px rgba(0,0,0,0.1); transition: 0.2s; z-index: 5; }
+        [data-bs-theme="dark"] .avatar-edit-badge { border-color: #2b2b3d; }
+        .avatar-edit-badge:hover { transform: translateX(25px) scale(1.1); background: var(--accent-pink); color: white; }
+
+        .section-title { font-size: 0.85rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-dark); margin-bottom: 20px; opacity: 0.8; }
+
+        .input-group-custom { margin-bottom: 20px; }
+        .input-group-custom label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.85rem; opacity: 0.7; }
+        .input-icon-wrap { position: relative; display: flex; align-items: center; }
+        .input-icon-wrap i { position: absolute; left: 15px; opacity: 0.5; font-size: 1.2rem; }
+
+        .form-control, .form-select { border-radius: 15px; padding: 12px 15px 12px 45px; background: var(--bg-elio); border: 2px solid transparent; color: var(--text-dark); font-weight: 700; transition: 0.3s; }
+        .form-control:focus, .form-select:focus { border-color: var(--accent-pink); box-shadow: 0 0 0 4px rgba(255, 154, 158, 0.15); outline: none; background: transparent; }
+
+        .locked { background: transparent !important; border-color: transparent !important; box-shadow: none !important; padding-left: 45px !important; pointer-events: none; opacity: 0.8; }
+
+        .btn-main { background: linear-gradient(45deg, #ff9a9e, #fad0c4); border: none; color: white; font-weight: 700; padding: 15px; border-radius: 15px; width: 100%; transition: 0.3s; box-shadow: 0 5px 15px rgba(255, 154, 158, 0.3); }
+        .btn-main:hover { transform: scale(1.02); color: white; box-shadow: 0 10px 20px rgba(255, 154, 158, 0.4); }
+        .btn-outline { background: white; color: var(--text-dark); font-weight: 700; padding: 15px; border-radius: 15px; width: 100%; border: 2px solid #eee; transition: 0.3s; }
+        [data-bs-theme="dark"] .btn-outline { background: #2b2b3d; border-color: #444; color: white; }
+
+        .theme-toggle { position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px; border-radius: 50%; background: white; border: 2px solid #ddd; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; font-size: 1.5rem; color: #2d3436; }
+        [data-bs-theme="dark"] .theme-toggle { background: #2b2b3d; border-color: #444; color: #f5f5f5; }
+    </style>
 </head>
 <body>
-    <div class="settings-page">
-        <header class="settings-header">
-            <a href="{% url 'settings' %}" class="back-btn">← Назад</a>
-            <h1 class="settings-title">Мій профіль</h1>
+
+    <div id="themeBtn" class="theme-toggle shadow"><i class="bi bi-moon-fill"></i></div>
+
+    <div class="profile-wrapper">
+        <img src="{% static 'mascot.png' %}" class="mascot-decor" alt="Elio">
+
+        <header class="header-bar">
+            <a href="{% url 'settings' %}" class="back-btn"><i class="bi bi-arrow-left me-2"></i>Налаштування</a>
+            <div style="width: 100px;"></div>
         </header>
 
-        <form class="profile-form" id="profileForm" method="POST">
-            {% csrf_token %}
+        <div class="feature-card">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-success border-0 shadow-sm d-flex align-items-center gap-2 mb-4" style="border-radius: 15px;">
+                        <i class="bi bi-check-circle-fill"></i> {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
 
-            <div class="input-group">
-                <label>Ім'я</label>
-                <input type="text" name="first_name" id="id_first_name"
-                       value="{{ profile.first_name }}" readonly class="locked">
-            </div>
+            <form id="profileForm" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
 
-            <div class="input-group">
-                <label>Прізвище</label>
-                <input type="text" name="last_name" id="id_last_name"
-                       value="{{ profile.last_name }}" readonly class="locked">
-            </div>
+                <div class="user-header">
+                    <div class="avatar-circle">
+                        {% if user.avatar %}
+                            <img src="{{ user.avatar.url }}" alt="Avatar">
+                        {% else %}
+                            <i class="bi bi-person-fill"></i>
+                        {% endif %}
+                    </div>
+                    <label for="avatarUpload" class="avatar-edit-badge" id="avatarBadge">
+                        <i class="bi bi-pencil-fill" style="font-size: 0.9rem;"></i>
+                    </label>
+                    <input type="file" id="avatarUpload" name="avatar" style="display: none;" accept="image/*">
 
-            <div class="input-group">
-                <label>Дата народження</label>
-                <input type="date" name="birth_date" id="id_birth_date"
-                       value="{{ profile.birth_date|date:'Y-m-d' }}" readonly class="locked">
-            </div>
+                    <h3 class="fw-black mt-3 mb-1">{{ user.first_name|default:user.username }} {{ user.last_name }}</h3>
+                    <span class="badge" style="background: var(--bg-elio); color: var(--text-dark); font-size: 0.85rem; padding: 8px 15px; border-radius: 20px; border: 1px solid #eee;">
+                        {% if user.role == 'psychologist' %} Спеціаліст {% else %} Клієнт {% endif %}
+                    </span>
+                </div>
 
-            <div class="input-group">
-                <label>Стать</label>
-                <select name="gender" id="id_gender" disabled class="locked">
-                    <option value="M" {% if profile.gender == 'M' %}selected{% endif %}>Чоловіча</option>
-                    <option value="F" {% if profile.gender == 'F' %}selected{% endif %}>Жіноча</option>
-                </select>
-            </div>
+                <h5 class="section-title">Контакти</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="input-group-custom">
+                            <label>Електронна пошта</label>
+                            <div class="input-icon-wrap">
+                                <i class="bi bi-envelope-at-fill"></i>
+                                <input type="email" value="{{ user.email }}" class="form-control locked" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group-custom">
+                            <label>Номер телефону</label>
+                            <div class="input-icon-wrap">
+                                <i class="bi bi-telephone-fill"></i>
+                                <input type="text" name="phone_number" value="{{ user.phone_number|default:'' }}" class="form-control locked editable-field" placeholder="Не вказано">
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="form-actions-profile">
-                <button type="button" id="editBtn" class="edit-btn-profile">Змінити дані</button>
+                <h5 class="section-title">Особисті дані</h5>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="input-group-custom">
+                            <label>Ім'я</label>
+                            <div class="input-icon-wrap">
+                                <i class="bi bi-person-fill"></i>
+                                <input type="text" name="first_name" value="{{ user.first_name }}" class="form-control locked editable-field">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group-custom">
+                            <label>Прізвище</label>
+                            <div class="input-icon-wrap">
+                                <i class="bi bi-person-badge-fill"></i>
+                                <input type="text" name="last_name" value="{{ user.last_name }}" class="form-control locked editable-field">
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                <button type="submit" id="saveBtn" class="save-btn-profile" style="display: none;">Зберегти зміни</button>
-            </div>
-        </form>
+                <h5 class="section-title"><i class="bi bi-shield-lock me-2"></i> Безпека</h5>
+                <div class="mb-5">
+                    <a href="{% url 'password_change' %}" class="btn-outline d-inline-block text-center text-decoration-none" style="width: auto; padding: 10px 25px; font-size: 0.9rem;">
+                        <i class="bi bi-key me-2"></i> Змінити пароль акаунту
+                    </a>
+                </div>
+
+                <div class="mt-4">
+                    <button type="button" id="editBtn" class="btn-outline"><i class="bi bi-pencil-square me-2"></i> Редагувати профіль</button>
+                    <button type="submit" id="saveBtn" class="btn-main" style="display: none;"><i class="bi bi-floppy-fill me-2"></i> Зберегти всі зміни</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
+        const btnTheme = document.getElementById('themeBtn');
+        const iconTheme = btnTheme.querySelector('i');
+        const htmlDoc = document.documentElement;
+
+        btnTheme.onclick = () => {
+            const theme = htmlDoc.getAttribute('data-bs-theme');
+            const newTheme = theme === 'light' ? 'dark' : 'light';
+            htmlDoc.setAttribute('data-bs-theme', newTheme);
+            iconTheme.className = newTheme === 'light' ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
+            localStorage.setItem('elio-theme', newTheme);
+        };
+
         const editBtn = document.getElementById('editBtn');
         const saveBtn = document.getElementById('saveBtn');
-        const formInputs = document.querySelectorAll('#profileForm input, #profileForm select');
+        const editableFields = document.querySelectorAll('.editable-field');
+        const avatarBadge = document.getElementById('avatarBadge');
 
         editBtn.addEventListener('click', function() {
-            formInputs.forEach(input => {
+            editableFields.forEach(input => {
                 input.removeAttribute('readonly');
                 input.removeAttribute('disabled');
                 input.classList.remove('locked');
-                input.classList.add('unlocked');
             });
-
+            avatarBadge.style.display = 'flex';
             editBtn.style.display = 'none';
             saveBtn.style.display = 'block';
         });
+
+        // Маска телефону
+        const phoneInput = document.querySelector('input[name="phone_number"]');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function() {
+                let val = this.value.replace(/\D/g, '');
+                if (val.length > 0) {
+                    if (!val.startsWith('380')) val = '380' + val;
+                    this.value = '+' + val.substring(0, 12);
+                } else { this.value = ''; }
+            });
+        }
     </script>
 </body>
 </html>
