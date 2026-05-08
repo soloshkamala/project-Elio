@@ -6,7 +6,7 @@ from accounts import views as accounts_views
 from django.conf.urls import handler404, handler500
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('secret-admin-elio/', admin.site.urls),
     path('', accounts_views.home, name='home'),
     path('calendar/', include('ELIO.calendar_app.urls')),
     path('profile/', include('ELIO.user_page.urls')),

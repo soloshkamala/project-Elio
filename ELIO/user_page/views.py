@@ -4,7 +4,8 @@ from django.db.models.functions import TruncDate
 from django.db.models import Avg
 from django.contrib.auth.decorators import login_required
 from .models import MoodEntry
-
+from django.contrib import messages
+from django.utils import timezone
 
 @login_required
 def show_user_page(request):
@@ -111,10 +112,19 @@ def reminders_view(request):
 
 
 @login_required
+def checkout_view(request):
+    if request.method == "POST":
+        user = request.user
+        user.premium_until = timezone.now() + timedelta(days=30)
+        user.save()
+
+        messages.success(request, "Premium активовано! Тепер тобі доступні всі функції аналітики.")
+
+        return redirect('premium')
+
+    return render(request, 'user_page/checkout.html')
+
+@login_required
 def premium_view(request):
     return render(request, 'user_page/premium.html')
 
-
-@login_required
-def checkout_view(request):
-    return render(request, 'user_page/checkout.html')

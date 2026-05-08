@@ -112,7 +112,6 @@ def psychologist_pending(request):
     if request.user.role == 'psychologist' and request.user.is_psychologist_verified:
         return redirect('psychologist_dashboard')
 
-    # ОБРОБКА ФОРМИ: Зберігаємо диплом і біографію
     if request.method == 'POST':
         bio = request.POST.get('bio')
         diploma = request.FILES.get('diploma_file')
@@ -219,6 +218,80 @@ def approve_psychologist(request, user_id):
         messages.success(request, f'Спеціаліста {user_to_approve.username} успішно схвалено!')
     return redirect('admin_dashboard')
 
+
+
+def password_reset_request(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        user = CustomUser.objects.filter(email=email).first()
+        if user:
+            # Видаляємо старі коди, якщо були
+            OTPVerification.objects.filter(user=user).delete()
+            otp = OTPVerification.objects.create(user=user)
+            otp.generate_code()
+
+            send_mail(
+                'Відновлення паролю ELIO',
+                f'Ваш 6-значний код для відновлення: {otp.code}',
+                'noreply@elio.com',
+                [user.email],
+                fail_silently=False,
+            )
+            request.session['reset_email'] = user.email
+            return redirect('password_reset_verify')
+        else:
+            messages.error(request, "Користувача з такою поштою не знайдено.")
+    return render(request, 'accounts/password_reset_request.html')
+
+
+def password_reset_verify(request):
+    email = request.session.get('reset_email')
+    if not email:
+        return redirect('password_reset_request')
+
+    if request.method == 'POST':
+        code = request.POST.get('code')
+        user = CustomUser.objects.filter(email=email).first()
+        if user:
+            otp = OTPVerification.objects.filter(user=user).first()
+            if otp and otp.code == code:
+                otp.delete()
+                request.session['reset_verified'] = True  # Прапорець, що код вірний
+                return redirect('password_reset_new_password')
+            else:
+                messages.error(request, "Невірний код. Спробуйте ще раз.")
+        # в кінці функції password_reset_verify:
+    return render(request, 'accounts/verify_otp.html', {
+            'email': email,
+            'is_reset': True
+        })
+
+
+def password_reset_new_password(request):
+    email = request.session.get('reset_email')
+    if not email or not request.session.get('reset_verified'):
+        return redirect('password_reset_request')
+
+    if request.method == 'POST':
+        pass1 = request.POST.get('password')
+        pass2 = request.POST.get('password_confirm')
+
+        if pass1 and pass1 == pass2:
+            user = CustomUser.objects.filter(email=email).first()
+            user.set_password(pass1)
+            user.save()
+
+            if 'reset_email' in request.session:
+                del request.session['reset_email']
+            if 'reset_verified' in request.session:
+                del request.session['reset_verified']
+
+            messages.success(request, "Пароль успішно змінено! Тепер ви можете увійти.")
+            return redirect('login')
+        else:
+            messages.error(request, "Паролі не співпадають.")
+
+    return render(request, 'accounts/password_reset_new_password.html')
 
 def error_404(request, exception):
     return render(request, '404.html', status=404)

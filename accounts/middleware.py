@@ -9,7 +9,7 @@ class LoginRequiredMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.path.startswith('/admin/') or request.path.startswith('/media/') or request.path.startswith('/static/'):
+        if request.path.startswith('/secret-admin-elio/') or request.path.startswith('/media/') or request.path.startswith('/static/'):
             return self.get_response(request)
 
         allowed_paths = [
@@ -17,6 +17,9 @@ class LoginRequiredMiddleware:
             reverse('login'),
             reverse('register'),
             reverse('verify_otp'),
+            reverse('password_reset_request'),
+            reverse('password_reset_verify'),
+            reverse('password_reset_new_password'),
         ]
 
         if not request.user.is_authenticated and request.path not in allowed_paths:

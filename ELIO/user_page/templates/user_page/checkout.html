@@ -1,52 +1,220 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="uk" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'user_page/style.css' %}">
-    <title>Оплата ELIO Premium</title>
+    <title>Оплата — Elio</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('elio-theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
+
+    <style>
+        :root { --bg-elio: #fdf6f0; --accent-pink: #ff9a9e; --text-dark: #2d3436; }
+        [data-bs-theme="dark"] { --bg-elio: #1e1e2e; --text-dark: #f5f5f5; }
+        body { font-family: 'Nunito', sans-serif; background-color: var(--bg-elio); color: var(--text-dark); display: flex; align-items: center; min-height: 100vh; padding: 20px 0; }
+
+        .header-bar { position: absolute; top: 40px; left: 0; right: 0; max-width: 500px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
+        .back-btn { background: white; padding: 10px 20px; border-radius: 20px; color: var(--accent-pink); text-decoration: none; font-weight: 700; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; }
+        [data-bs-theme="dark"] .back-btn { background: #2b2b3d; }
+        .back-btn:hover { transform: translateX(-5px); color: var(--accent-pink); }
+
+        .feature-card { background: white; border-radius: 25px; padding: 40px; border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.05); max-width: 500px; width: 100%; margin: 0 auto; }
+        [data-bs-theme="dark"] .feature-card { background: #2b2b3d; }
+
+        label { font-weight: 700; margin-bottom: 5px; opacity: 0.7; font-size: 0.9rem; }
+
+        .input-group-custom { position: relative; margin-bottom: 20px; }
+        .card-icon-wrapper { position: absolute; right: 15px; top: 12px; display: flex; align-items: center; }
+
+        .form-control { border-radius: 15px; padding: 15px 20px; background: var(--bg-elio); border: 2px solid transparent; color: var(--text-dark); font-weight: 700; transition: 0.3s; width: 100%; }
+        [data-bs-theme="dark"] .form-control { border-color: #444; }
+        .form-control:focus { border-color: var(--accent-pink); box-shadow: none; outline: none; background: transparent; }
+
+        .btn-main { background: linear-gradient(45deg, #ff9a9e, #fad0c4); border: none; color: white; font-weight: 700; padding: 15px; border-radius: 15px; width: 100%; transition: 0.3s; margin-top: 10px; }
+        .btn-main:hover { transform: scale(1.02); color: white; opacity: 0.9; }
+
+        .error-msg { background: #ffebee; color: #c62828; padding: 10px; border-radius: 10px; font-size: 0.85rem; font-weight: bold; display: none; margin-bottom: 15px; text-align: left; }
+        [data-bs-theme="dark"] .error-msg { background: rgba(220, 53, 69, 0.2); color: #ff8a80; }
+
+        .theme-toggle { position: fixed; bottom: 30px; right: 30px; width: 55px; height: 55px; border-radius: 50%; background: white; border: 2px solid #ddd; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; font-size: 1.5rem; }
+        [data-bs-theme="dark"] .theme-toggle { background: #2b2b3d; border-color: #444; color: #f5f5f5; }
+
+        /* Стилі для брендів карт */
+        .brand-visa { color: #1a1f71; font-weight: 900; font-style: italic; font-size: 1.2rem; }
+        [data-bs-theme="dark"] .brand-visa { color: #4b84ff; }
+        .brand-mc { font-weight: 900; font-size: 1.2rem; }
+        .brand-mc .m { color: #eb001b; } .brand-mc .c { color: #f79e1b; }
+        .brand-amex { color: #2e77bc; font-weight: 900; font-size: 1.2rem; }
+    </style>
 </head>
 <body>
-    <div class="settings-page">
-        <header class="settings-header">
-            <a href="javascript:history.back()" class="back-btn">← Назад</a>
-            <h1 class="settings-title">Оплата</h1>
-        </header>
 
-        <main style="padding: 20px; text-align: center;">
-            <div style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                <h3 style="margin-bottom: 20px;">Оформлення підписки</h3>
-                <p style="color: #7b61ff; font-weight: bold; font-size: 20px;">Сума до сплати: 199 грн</p>
+    <header class="header-bar">
+        <a href="{% url 'premium' %}" class="back-btn"><i class="bi bi-arrow-left me-2"></i>Назад</a>
+    </header>
 
-                <form style="margin-top: 20px; text-align: left;">
-                    <div class="input-group">
-                        <label>Номер картки</label>
-                        <input type="text" placeholder="0000 0000 0000 0000" maxlength="19">
+    <div class="container">
+        <div class="feature-card text-center mt-5">
+            <h3 class="fw-black mb-1">Оформлення підписки</h3>
+            <p class="mb-4" style="color: var(--accent-pink); font-weight: 900; font-size: 1.2rem;">Сума до сплати: 199 грн</p>
+
+            <div id="errorBox" class="error-msg"><i class="bi bi-exclamation-triangle-fill me-2"></i><span id="errorText"></span></div>
+
+            <form method="POST" id="payForm" class="text-start">
+                {% csrf_token %}
+
+                <div class="input-group-custom">
+                    <label>Номер картки</label>
+                    <input type="text" id="card_number" class="form-control" placeholder="0000 0000 0000 0000" maxlength="19" required autocomplete="off">
+                    <div class="card-icon-wrapper" id="cardIconWrapper">
+                        <i class="bi bi-credit-card-2-front" style="color: #ccc; font-size: 1.5rem;"></i>
                     </div>
+                </div>
 
-                    <div style="display: flex; gap: 10px;">
-                        <div class="input-group" style="flex: 1;">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="input-group-custom mb-0">
                             <label>Термін дії</label>
-                            <input type="text" placeholder="MM/YY" maxlength="5">
-                        </div>
-                        <div class="input-group" style="flex: 1;">
-                            <label>CVC</label>
-                            <input type="password" placeholder="***" maxlength="3">
+                            <input type="text" id="expiry" class="form-control" placeholder="ММ/РР" maxlength="5" required autocomplete="off">
                         </div>
                     </div>
+                    <div class="col-6">
+                        <div class="input-group-custom mb-0">
+                            <label>CVC</label>
+                            <input type="password" id="cvc" class="form-control" placeholder="***" maxlength="3" required autocomplete="off">
+                        </div>
+                    </div>
+                </div>
 
-                    <button type="button" class="save-btn" style="margin-top: 20px; width: 100%;"
-                            onclick="alert('Дякуємо! Оплата пройшла успішно (це демонстраційна версія).')">
-                        Оплатити зараз
-                    </button>
-                </form>
-            </div>
+                <button type="button" id="validateBtn" class="btn-main mt-4">Оплатити зараз</button>
+            </form>
 
-            <p style="margin-top: 20px; color: #888; font-size: 12px;">
-                Ваші дані захищені за стандартом PCI DSS
+            <p class="mt-4 small opacity-50 mb-0">
+                <i class="bi bi-shield-lock-fill"></i> Ваші дані захищені за стандартом PCI DSS
             </p>
-        </main>
+        </div>
     </div>
+
+    <div class="modal fade" id="successModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center p-4 border-0" style="border-radius: 30px; background-color: var(--bg-elio); color: var(--text-dark);">
+                <div class="modal-body">
+                    <i class="bi bi-check-circle-fill" style="font-size: 5rem; color: #28a745;"></i>
+                    <h2 class="fw-black mt-3">Успішно!</h2>
+                    <p class="opacity-75">Дякуємо! Оплата пройшла успішно (це демонстраційна версія). Вашу підписку активовано.</p>
+                    <button type="button" class="btn-main mt-3 w-auto px-5" id="finalSubmitBtn">Чудово</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="themeBtn" class="theme-toggle shadow"><i class="bi bi-moon-fill"></i></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Тема
+        const btn = document.getElementById('themeBtn');
+        const iconTheme = btn.querySelector('i');
+        const htmlDoc = document.documentElement;
+
+        btn.onclick = () => {
+            const theme = htmlDoc.getAttribute('data-bs-theme');
+            const newTheme = theme === 'light' ? 'dark' : 'light';
+            htmlDoc.setAttribute('data-bs-theme', newTheme);
+            iconTheme.className = newTheme === 'light' ? 'bi bi-moon-fill' : 'bi bi-sun-fill';
+            localStorage.setItem('elio-theme', newTheme);
+        };
+        const savedTheme = localStorage.getItem('elio-theme');
+        if(savedTheme) { iconTheme.className = savedTheme === 'light' ? 'bi bi-moon-fill' : 'bi bi-sun-fill'; }
+
+        // Логіка форми
+        const cardInput = document.getElementById('card_number');
+        const expiryInput = document.getElementById('expiry');
+        const cvcInput = document.getElementById('cvc');
+        const cardIconWrapper = document.getElementById('cardIconWrapper');
+        const validateBtn = document.getElementById('validateBtn');
+        const payForm = document.getElementById('payForm');
+        const finalSubmitBtn = document.getElementById('finalSubmitBtn');
+        const errorBox = document.getElementById('errorBox');
+        const errorText = document.getElementById('errorText');
+        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+
+        function showError(msg) {
+            errorText.innerText = msg;
+            errorBox.style.display = 'block';
+        }
+
+        // Маска карти + Бренди
+        cardInput.addEventListener('input', (e) => {
+            let val = e.target.value.replace(/\D/g, '');
+            let formatted = val.replace(/(.{4})/g, '$1 ').trim();
+            e.target.value = formatted;
+
+            let iconHTML = '<i class="bi bi-credit-card-2-front" style="color: #ccc; font-size: 1.5rem;"></i>';
+            if (val.startsWith('4')) {
+                iconHTML = '<span class="brand-visa">VISA</span>';
+            } else if (/^5[1-5]/.test(val) || /^2[2-7]/.test(val)) {
+                iconHTML = '<span class="brand-mc"><span class="m">M</span><span class="c">C</span></span>';
+            } else if (/^3[47]/.test(val)) {
+                iconHTML = '<span class="brand-amex">AMEX</span>';
+            }
+            cardIconWrapper.innerHTML = iconHTML;
+        });
+
+        // Маска дати
+        expiryInput.addEventListener('input', (e) => {
+            let val = e.target.value.replace(/\D/g, '');
+            if (val.length >= 2) {
+                let m = val.substring(0, 2);
+                if (parseInt(m) > 12) m = '12';
+                if (m === '00') m = '01';
+                val = m + '/' + val.substring(2, 4);
+            }
+            e.target.value = val;
+        });
+
+        cvcInput.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        // Валідація перед показом модалки
+        validateBtn.addEventListener('click', () => {
+            errorBox.style.display = 'none';
+
+            const cardVal = cardInput.value.replace(/\D/g, '');
+            const expVal = expiryInput.value;
+            const cvcVal = cvcInput.value;
+
+            if(cardVal.length < 15) return showError("Введіть повний номер картки (мінімум 15 цифр).");
+            if(expVal.length < 5) return showError("Введіть термін дії у форматі ММ/РР.");
+            if(cvcVal.length < 3) return showError("CVC має містити 3 цифри.");
+
+            const [month, year] = expVal.split('/');
+            const currentYear = 26; // 2026 рік
+            const currentMonth = 5; // Травень
+
+            const m = parseInt(month);
+            const y = parseInt(year);
+
+            if (m < 1 || m > 12) return showError("Невірний місяць.");
+            if (y < currentYear) return showError("Термін дії картки минув.");
+            if (y === currentYear && m < currentMonth) return showError("Термін дії картки минув цього року.");
+
+            successModal.show();
+        });
+
+        finalSubmitBtn.addEventListener('click', () => {
+            HTMLFormElement.prototype.submit.call(payForm);
+        });
+    </script>
 </body>
 </html>
