@@ -18,4 +18,10 @@ urlpatterns = [
     path('settings/reminders/', views.reminders_view, name='reminders'),
     path('settings/premium/', views.premium_view, name='premium'),
     path('settings/premium/checkout/', views.checkout_view, name='checkout'),
+
+    # ==========================================
+    # НОВІ ШЛЯХИ ДЛЯ ПСИХОЛОГІВ
+    # ==========================================
+    path('specialists/', views.specialists_list, name='specialists'),
+    path('specialists/contact/<int:psy_id>/', views.contact_specialist, name='contact_specialist'),
 ]
