@@ -21,6 +21,7 @@ class MoodEntry(models.Model):
     mood_level = models.IntegerField(choices=MOOD_CHOICES)
     note = models.TextField(blank=True, null=True)
     had_panic_attack = models.BooleanField(default=False)
+    sleep_quality = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username} - Настрій: {self.mood_level} ({self.date_time.strftime('%d.%m.%Y %H:%M')})"

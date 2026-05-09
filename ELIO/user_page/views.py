@@ -46,20 +46,24 @@ def show_user_page(request):
     return render(request, 'user_page/index.html', context)
 
 
+
 @login_required
 def add_mood_view(request):
     if request.method == "POST":
         mood_level = request.POST.get('mood_level')
+        sleep_quality = request.POST.get('sleep_quality')
         note = request.POST.get('note')
         panic = request.POST.get('had_panic_attack') == 'on'
 
-        # ПРИВ'ЯЗУЄМО НАСТРІЙ ДО ЮЗЕРА
-        MoodEntry.objects.create(
-            user=request.user,
-            mood_level=int(mood_level),
-            note=note,
-            had_panic_attack=panic
-        )
+        # Перевіряємо, чи користувач вибрав настрій
+        if mood_level:
+            MoodEntry.objects.create(
+                user=request.user,
+                mood_level=int(mood_level),
+                sleep_quality=int(sleep_quality) if sleep_quality else 5,
+                note=note,
+                had_panic_attack=panic
+            )
     return redirect('user_home')
 
 
