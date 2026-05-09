@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from datetime import datetime, timedelta
 from django.db.models.functions import TruncDate
 from django.db.models import Avg
@@ -6,6 +6,10 @@ from django.contrib.auth.decorators import login_required
 from .models import MoodEntry
 from django.contrib import messages
 from django.utils import timezone
+
+# Додаємо імпорт CustomUser з додатку accounts для сторінки психологів
+from accounts.models import CustomUser
+
 
 @login_required
 def show_user_page(request):
@@ -124,7 +128,24 @@ def checkout_view(request):
 
     return render(request, 'user_page/checkout.html')
 
+
 @login_required
 def premium_view(request):
     return render(request, 'user_page/premium.html')
 
+
+# ==========================================
+# НОВІ ФУНКЦІЇ ДЛЯ СТОРІНКИ ПСИХОЛОГІВ
+# ==========================================
+
+@login_required
+def specialists_list(request):
+    # Беремо всіх користувачів, у яких роль 'psychologist'
+    psychologists = CustomUser.objects.filter(role='psychologist')
+    return render(request, 'user_page/specialists.html', {'psychologists': psychologists})
+
+@login_required
+def contact_specialist(request, psy_id):
+    # Шукаємо конкретного психолога за його ID
+    psychologist = get_object_or_404(CustomUser, id=psy_id, role='psychologist')
+    return render(request, 'user_page/contact_specialist.html', {'psychologist': psychologist})
